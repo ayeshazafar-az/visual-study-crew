@@ -1,16 +1,19 @@
 import os
 from dotenv import load_dotenv
-from crewai import Agent
-from langchain_google_genai import ChatGoogleGenerativeAI
+from crewai import Agent, LLM
 from tools import generate_concept_image
 
-# Load environment variables from .env file
-load_dotenv()
+# Force reload from .env, overriding any cached terminal variables
+load_dotenv(override=True)
 
-# Initialize the Gemini LLM
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.environ.get("GEMINI_API_KEY")
+# Fetch and clean the API key
+raw_key = os.environ.get("GEMINI_API_KEY", "")
+cleaned_key = raw_key.replace('"', '').replace("'", "").strip()
+
+# Initialize the LLM using the current active model
+gemini_llm = LLM(
+    model="gemini/gemini-3.8-flash", 
+    api_key=cleaned_key
 )
 
 # 1. The Professor
@@ -18,7 +21,7 @@ professor = Agent(
     role="Senior Concept Analyst",
     goal="Analyze the input topic or document and break it down into clear, highly digestible explanations.",
     backstory="You are an award-winning university professor who excels at explaining complex subjects to beginners using analogies and structured breakdowns.",
-    llm=llm,
+    llm=gemini_llm,
     allow_delegation=False
 )
 
@@ -28,7 +31,7 @@ visualizer = Agent(
     goal="Take educational concepts and create a highly descriptive prompt to generate a supporting visual aid.",
     backstory="You are a creative director for an education technology company. You know how to translate abstract text into stunning, memorable visuals that help students learn.",
     tools=[generate_concept_image],
-    llm=llm,
+    llm=gemini_llm,
     allow_delegation=False
 )
 
@@ -37,6 +40,6 @@ quizmaster = Agent(
     role="Assessment Editor & Compiler",
     goal="Generate practice questions and synthesize the professor's explanation and the visualizer's image into a final formatted Markdown study guide.",
     backstory="You are a meticulous curriculum designer. You ensure study materials are engaging, test the user's knowledge, and are formatted perfectly in Markdown.",
-    llm=llm,
+    llm=gemini_llm,
     allow_delegation=False
 )

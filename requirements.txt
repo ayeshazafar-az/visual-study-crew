@@ -3,3 +3,4 @@ crewai
 crewai-tools
 langchain-google-genai
 python-dotenv
+PyPDF2
