@@ -134,8 +134,20 @@ if st.button("🚀 Generate Visual Study Guide", use_container_width=True):
                     verbose=False 
                 )
                 
-                # Execute Workflow
-                result = study_crew.kickoff()
+                # Execute Workflow with Retry Logic for 503 errors
+                max_retries = 3
+                import time
+                
+                for attempt in range(max_retries):
+                    try:
+                        result = study_crew.kickoff()
+                        break  # If successful, break out of the retry loop
+                    except Exception as e:
+                        if "503" in str(e) and attempt < max_retries - 1:
+                            st.warning(f"⚠️ High API Demand (503). Retrying in {(attempt+1)*3}s... (Attempt {attempt + 1}/{max_retries-1})")
+                            time.sleep((attempt + 1) * 3)  # Exponential backoff
+                        else:
+                            raise e  # Propagate the error if retries are exhausted or it's a different error
                 
                 status.update(label="✅ Study Guide Complete!", state="complete", expanded=False)
                 
