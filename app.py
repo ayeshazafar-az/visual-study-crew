@@ -3,7 +3,7 @@ import os
 import PyPDF2
 from dotenv import load_dotenv
 from crewai import Crew
-from agents import professor, visualizer, quizmaster
+from agents import professor, visualizer, quizmaster, gemini_fallback_llm
 from tasks import create_study_tasks
 
 # Force reload from .env
@@ -134,9 +134,8 @@ if st.button("🚀 Generate Visual Study Guide", use_container_width=True):
                     verbose=False 
                 )
                 
-                # Execute Workflow with Retry Logic for 503 errors
-                max_retries = 3
-                import time
+                # Execute Workflow with Fallback Logic for 503 errors
+                max_retries = 2
                 
                 for attempt in range(max_retries):
                     try:
@@ -144,8 +143,18 @@ if st.button("🚀 Generate Visual Study Guide", use_container_width=True):
                         break  # If successful, break out of the retry loop
                     except Exception as e:
                         if "503" in str(e) and attempt < max_retries - 1:
-                            st.warning(f"⚠️ High API Demand (503). Retrying in {(attempt+1)*3}s... (Attempt {attempt + 1}/{max_retries-1})")
-                            time.sleep((attempt + 1) * 3)  # Exponential backoff
+                            st.warning(f"⚠️ High API Demand (503). Switching to Fallback Pro Model...")
+                            # Swap out the models for all agents
+                            professor.llm = gemini_fallback_llm
+                            visualizer.llm = gemini_fallback_llm
+                            quizmaster.llm = gemini_fallback_llm
+                            
+                            # Reconstruct the crew
+                            study_crew = Crew(
+                                agents=[professor, visualizer, quizmaster],
+                                tasks=tasks,
+                                verbose=False 
+                            )
                         else:
                             raise e  # Propagate the error if retries are exhausted or it's a different error
                 

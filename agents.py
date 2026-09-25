@@ -16,6 +16,12 @@ gemini_llm = LLM(
     api_key=cleaned_key
 )
 
+# Fallback LLM to be dynamically swapped during high-demand 503 errors
+gemini_fallback_llm = LLM(
+    model="gemini/gemini-1.5-pro",
+    api_key=cleaned_key
+)
+
 # 1. The Professor
 professor = Agent(
     role="Senior Concept Analyst",
