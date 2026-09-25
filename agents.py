@@ -12,7 +12,7 @@ cleaned_key = raw_key.replace('"', '').replace("'", "").strip()
 
 # Initialize the LLM using the current active model
 gemini_llm = LLM(
-    model="gemini/gemini-3.8-flash", 
+    model="gemini/gemini-1.5-flash", 
     api_key=cleaned_key
 )
 
