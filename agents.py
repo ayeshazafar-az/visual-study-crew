@@ -18,7 +18,7 @@ gemini_llm = LLM(
 
 # Fallback LLM to be dynamically swapped during high-demand 503 errors
 gemini_fallback_llm = LLM(
-    model="gemini/gemini-1.5-pro",
+    model="gemini/gemini-pro",
     api_key=cleaned_key
 )
 
