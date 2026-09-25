@@ -31,8 +31,11 @@ def analyze_educational_image(image_path: str, context: str = "Explain the conce
     Pass the absolute file path to the image as the image_path argument.
     """
     if not os.path.exists(image_path):
+        import logging
+        logging.error(f"Image not found at {image_path}")
         return f"Error: Image not found at {image_path}"
         
+    print(f"\n[DEBUG] 🕵️‍♂️ Professor is actively scanning the image at: {image_path}...")
     try:
         with open(image_path, "rb") as img_file:
             img_data = base64.b64encode(img_file.read()).decode("utf-8")

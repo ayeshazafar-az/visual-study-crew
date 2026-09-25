@@ -10,12 +10,17 @@ def create_study_tasks(topic_or_content: str):
     
     # Check if the input is an image path
     is_image = topic_or_content.startswith("[IMAGE_PATH]")
+    if is_image:
+        image_path = topic_or_content.replace("[IMAGE_PATH]", "").strip()
+        image_instruction = f"CRITICAL: You MUST use the 'Analyze Educational Image' tool right now passing '{image_path}' as the image_path argument. Do not hallucinate! Read the diagram first!"
+    else:
+        image_instruction = ""
     
     # Task 1: The Professor explains the core concept
     explain_task = Task(
         description=(
             f"Analyze the following material: '{topic_or_content}'.\n"
-            f"{'IMPORTANT: This is an image path. You MUST use your Analyze Educational Image tool with this path to read its contents first!' if is_image else ''}\n"
+            f"{image_instruction}\n"
             "1. Identify the 3 most important core concepts.\n"
             "2. Write a clear, beginner-friendly explanation using analogies.\n"
             "3. Format this as the 'Concept Breakdown' section."
