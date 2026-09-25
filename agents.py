@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from crewai import Agent, LLM
-from tools import generate_concept_image
+from tools import generate_concept_image, analyze_educational_image
 
 # Force reload from .env, overriding any cached terminal variables
 load_dotenv(override=True)
@@ -19,8 +19,9 @@ gemini_llm = LLM(
 # 1. The Professor
 professor = Agent(
     role="Senior Concept Analyst",
-    goal="Analyze the input topic or document and break it down into clear, highly digestible explanations.",
-    backstory="You are an award-winning university professor who excels at explaining complex subjects to beginners using analogies and structured breakdowns.",
+    goal="Analyze the input topic, document, or image and break it down into clear, highly digestible explanations. Use your image analysis tool when provided with an image path.",
+    backstory="You are an award-winning university professor who excels at explaining complex subjects to beginners using analogies and structured breakdowns. You can also analyze educational visual materials.",
+    tools=[analyze_educational_image],
     llm=gemini_llm,
     allow_delegation=False
 )

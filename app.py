@@ -65,7 +65,7 @@ st.markdown('<p class="main-header">🎓 Multi-Agent Study Forge</p>', unsafe_al
 st.markdown('<p class="sub-header">Choose your input method below to generate a comprehensive study guide.</p>', unsafe_allow_html=True)
 
 # Create Tabs for different input methods
-tab1, tab2 = st.tabs(["📝 Text Topic", "📄 Upload PDF"])
+tab1, tab2, tab3 = st.tabs(["📝 Text Topic", "📄 Upload PDF", "🖼️ Upload Image"])
 
 study_material = None
 
@@ -97,6 +97,19 @@ with tab2:
                 st.success(f"📄 PDF '{uploaded_file.name}' extracted successfully!")
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
+
+with tab3:
+    st.markdown("### Upload an Educational Image")
+    uploaded_image = st.file_uploader("Upload a diagram, notes screenshot, or visual aid", type=["png", "jpg", "jpeg"], label_visibility="collapsed")
+    
+    if uploaded_image:
+        # Save temp image
+        temp_path = "temp_upload.png"
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_image.read())
+        
+        study_material = f"[IMAGE_PATH] {temp_path}"
+        st.success(f"🖼️ Image '{uploaded_image.name}' readied for the Professor!")
 
 st.markdown("---")
 

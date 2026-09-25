@@ -8,15 +8,19 @@ def create_study_tasks(topic_or_content: str):
     from the Streamlit app.
     """
     
+    # Check if the input is an image path
+    is_image = topic_or_content.startswith("[IMAGE_PATH]")
+    
     # Task 1: The Professor explains the core concept
     explain_task = Task(
         description=(
-            f"Analyze the following topic or document content: '{topic_or_content}'.\n"
+            f"Analyze the following material: '{topic_or_content}'.\n"
+            f"{'IMPORTANT: This is an image path. You MUST use your Analyze Educational Image tool with this path to read its contents first!' if is_image else ''}\n"
             "1. Identify the 3 most important core concepts.\n"
             "2. Write a clear, beginner-friendly explanation using analogies.\n"
             "3. Format this as the 'Concept Breakdown' section."
         ),
-        expected_output="A detailed, beginner-friendly explanation of the core concepts formatted in Markdown.",
+        expected_output="A detailed, beginner-friendly explanation of the core concepts formatted in Markdown. If the input was an image, the explanation should be based on the image's contents.",
         agent=professor
     )
 
