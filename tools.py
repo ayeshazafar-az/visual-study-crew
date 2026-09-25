@@ -11,8 +11,12 @@ def generate_concept_image(prompt: str) -> str:
     Generates an educational image based on a descriptive prompt.
     Returns the markdown-formatted image link which must be embedded in the final report.
     """
-    # Encode the prompt to make it URL-safe
-    encoded_prompt = urllib.parse.quote(prompt)
+    # Clean the prompt to ensure safe URL markdown generation
+    # Streamlit and markdown parsers can break with extremely long URLs or special characters
+    safe_prompt = ''.join(c for c in prompt if c.isalnum() or c.isspace()).strip()
+    safe_prompt = safe_prompt[:300]  # Truncate to prevent URI Too Long errors
+    
+    encoded_prompt = urllib.parse.quote(safe_prompt)
     
     # Construct the Pollinations.ai URL
     image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
