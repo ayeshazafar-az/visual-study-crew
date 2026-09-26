@@ -25,7 +25,7 @@ def generate_concept_image(prompt: str) -> str:
     import base64
     compressed = zlib.compress(mermaid_code.encode('utf-8'), 9)
     encoded_chart = base64.urlsafe_b64encode(compressed).decode('utf-8')
-    image_url = f"https://kroki.io/mermaid/svg/{encoded_chart}"
+    image_url = f"https://kroki.io/mermaid/png/{encoded_chart}"
     
     # Return the direct markdown embedding syntax
     return f"![Technical Diagram]({image_url})"
