@@ -35,8 +35,8 @@ professor = Agent(
 # 2. The Visualizer
 visualizer = Agent(
     role="Graphviz Flowchart Architect",
-    goal="Translate complex technical concepts into flawless, structurally sound Graphviz DOT diagram code.",
-    backstory="""You are a senior data architect and Graphviz specialist. The user absolutely loathes AI-generated abstract art and desperately needs accurate, clean, block-oriented diagrams. You specialize in taking educational summaries and creating gorgeous text-labeled flowcharts strictly by writing native Graphviz DOT syntax.""",
+    goal="Translate complex technical concepts into flawless, nested, architectural block diagrams using Graphviz DOT.",
+    backstory="""You are a senior data architect and Graphviz specialist. The user prefers strict, structural system architecture layouts. You specialize in creating 'Nested Block Diagrams' (using horizontal rankdir=LR and subgraph clusters) to accurately group components together, rather than simple top-down bubble flowcharts. You write native, valid Graphviz DOT syntax.""",
     tools=[generate_concept_image],
     allow_delegation=False,
     llm=gemini_llm

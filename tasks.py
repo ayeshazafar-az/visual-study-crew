@@ -33,8 +33,11 @@ def create_study_tasks(topic_or_content: str):
     visualize_task = Task(
         description=(
             "Based on the Professor's explanation, identify the structural components of the core concept.\n"
-            "1. Write valid, clean Graphviz DOT syntax (e.g., 'digraph G { rankdir=TD; CPU -> ALU }') that accurately blocks out and labels these concepts into a flowchart.\n"
-            "CRITICAL: The 'Generate Concept Image' tool now strictly accepts Graphviz DOT code! Do NOT write a natural language prompt. You MUST pass ONLY the raw Graphviz DOT syntax to the tool.\n"
+            "1. Write valid, clean Graphviz DOT syntax that strictly represents a professional BLOCK DIAGRAM.\n"
+            "   - Use 'rankdir=LR' for a horizontal, system-architecture style flow.\n"
+            "   - Use 'subgraph cluster_name { label=... }' to group internal components natively (e.g. putting ALU and CU inside the CPU cluster).\n"
+            "   - Use 'shape=box, style=filled' for standard looking blocks.\n"
+            "CRITICAL: The 'Generate Concept Image' tool accepts ONLY raw Graphviz DOT code. Do NOT write a natural language prompt. Example: 'digraph G { rankdir=LR; node [shape=box style=filled]; subgraph cluster_0 { label=\"CPU\"; ALU; CU } Input -> CU; }'.\n"
             "2. Pass this Graphviz code to the 'Generate Concept Image' tool.\n"
             "3. The tool will return a Markdown image link. You MUST output this exact image link in your final response."
         ),
