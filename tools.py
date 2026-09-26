@@ -12,14 +12,20 @@ def generate_concept_image(prompt: str) -> str:
     Returns the markdown-formatted image link which must be embedded in the final report.
     """
     mermaid_code = prompt.strip()
-    # Strip markdown code blocks if the LLM adds them
-    if mermaid_code.startswith("```"):
-        parts = mermaid_code.split('\n')
-        if len(parts) >= 2:
-            mermaid_code = '\n'.join(parts[1:-1])
-            
-    encoded_chart = urllib.parse.quote(mermaid_code)
-    image_url = f"https://quickchart.io/mermaid?chart={encoded_chart}"
+    # Safely extract Mermaid block if LLM added conversational text
+    if "```mermaid" in mermaid_code:
+        mermaid_code = mermaid_code.split("```mermaid")[1].split("```")[0]
+    elif "```" in mermaid_code:
+        mermaid_code = mermaid_code.split("```")[1].split("```")[0]
+        
+    mermaid_code = mermaid_code.strip()
+    
+    # Kroki mathematically expects zlib compression + URL-safe Base64
+    import zlib
+    import base64
+    compressed = zlib.compress(mermaid_code.encode('utf-8'), 9)
+    encoded_chart = base64.urlsafe_b64encode(compressed).decode('utf-8')
+    image_url = f"https://kroki.io/mermaid/svg/{encoded_chart}"
     
     # Return the direct markdown embedding syntax
     return f"![Technical Diagram]({image_url})"
