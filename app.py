@@ -64,22 +64,19 @@ with st.sidebar:
 st.markdown('<p class="main-header">🎓 Multi-Agent Study Forge</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Choose your input method below to generate a comprehensive study guide.</p>', unsafe_allow_html=True)
 
-# Create Tabs for different input methods
-tab1, tab2, tab3 = st.tabs(["📝 Text Topic", "📄 Upload PDF", "🖼️ Upload Image"])
+# Create unified input container
+study_material = ""
 
-study_material = None
-
-with tab1:
-    st.markdown("### Enter a Subject to Learn")
-    topic_input = st.text_input("Topic", placeholder="e.g., The Architecture of a CPU, Photosynthesis, The French Revolution...", label_visibility="collapsed")
-    if topic_input:
-        study_material = topic_input
-
-with tab2:
-    st.markdown("### Upload a Document")
-    uploaded_file = st.file_uploader("Upload a PDF file to extract core study materials", type=["pdf"], label_visibility="collapsed")
+st.markdown("### Prepare Your Study Material")
+with st.container(border=True):
+    topic_input = st.text_area("Context or Topic (Optional)", placeholder="e.g., Explain the Architecture of a CPU...", help="Describe the topic you want to learn, or provide context for your uploaded file.", label_visibility="collapsed")
     
-    if uploaded_file:
+    uploaded_file = st.file_uploader("Upload a PDF or Image (Optional)", type=["pdf", "png", "jpg", "jpeg"], label_visibility="collapsed")
+
+if uploaded_file:
+    file_ext = uploaded_file.name.split('.')[-1].lower()
+    
+    if file_ext == "pdf":
         with st.spinner("Extracting text from PDF..."):
             try:
                 pdf_reader = PyPDF2.PdfReader(uploaded_file)
@@ -88,28 +85,28 @@ with tab2:
                     if page.extract_text():
                         extracted_text += page.extract_text() + "\n"
                 
-                # Truncate text to prevent overloading the LLM token limit
                 if len(extracted_text) > 15000:
                     extracted_text = extracted_text[:15000] + "\n...[Content Truncated for Processing]..."
                     st.warning("⚠️ Document is very long. Analyzing the first ~15,000 characters.")
                 
-                study_material = f"Based on the following extracted document text, generate a study guide:\n\n{extracted_text}"
+                study_material += f"Document Content:\n{extracted_text}\n\n"
                 st.success(f"📄 PDF '{uploaded_file.name}' extracted successfully!")
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
-
-with tab3:
-    st.markdown("### Upload an Educational Image")
-    uploaded_image = st.file_uploader("Upload a diagram, notes screenshot, or visual aid", type=["png", "jpg", "jpeg"], label_visibility="collapsed")
-    
-    if uploaded_image:
-        # Save temp image
+                
+    elif file_ext in ["png", "jpg", "jpeg"]:
         temp_path = "temp_upload.png"
         with open(temp_path, "wb") as f:
-            f.write(uploaded_image.read())
+            f.write(uploaded_file.read())
         
-        study_material = f"[IMAGE_PATH] {temp_path}"
-        st.success(f"🖼️ Image '{uploaded_image.name}' readied for the Professor!")
+        study_material += f"Image Reference: [IMAGE_PATH] {temp_path}\n\n"
+        st.success(f"🖼️ Image '{uploaded_file.name}' readied for the Professor!")
+
+if topic_input:
+    study_material += f"User Instructions/Topic:\n{topic_input}\n\n"
+
+study_material = study_material.strip()
+# If empty, study_material will equal an empty string. The "if not study_material" check handles this.
 
 st.markdown("---")
 
