@@ -11,15 +11,15 @@ def generate_concept_image(prompt: str) -> str:
     Generates an educational image based on a descriptive prompt.
     Returns the markdown-formatted image link which must be embedded in the final report.
     """
-    # Clean the prompt to ensure safe URL markdown generation
-    # Streamlit and markdown parsers can break with extremely long URLs or special characters
-    safe_prompt = ''.join(c for c in prompt if c.isalnum() or c.isspace()).strip()
-    safe_prompt = safe_prompt[:300]  # Truncate to prevent URI Too Long errors
+    # Clean the prompt but keep basic punctuation for better LLM comprehension
+    import re
+    safe_prompt = re.sub(r'[^a-zA-Z0-9\s,.-]', '', prompt).strip()
+    safe_prompt = safe_prompt.replace('\n', ' ').replace('\r', '')[:800]
     
     encoded_prompt = urllib.parse.quote(safe_prompt)
     
-    # Construct the Pollinations.ai URL
-    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=800&height=600&nologo=true"
+    # Construct the Pollinations.ai URL using the advanced FLUX model
+    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=768&nologo=true&model=flux"
     
     # Return the direct markdown embedding syntax
     return f"![Visual Aid]({image_url})"
