@@ -11,18 +11,18 @@ def generate_concept_image(prompt: str) -> str:
     Generates an educational image based on a descriptive prompt.
     Returns the markdown-formatted image link which must be embedded in the final report.
     """
-    # Clean the prompt but keep basic punctuation for better LLM comprehension
-    import re
-    safe_prompt = re.sub(r'[^a-zA-Z0-9\s,.-]', '', prompt).strip()
-    safe_prompt = safe_prompt.replace('\n', ' ').replace('\r', '')[:800]
-    
-    encoded_prompt = urllib.parse.quote(safe_prompt)
-    
-    # Construct the Pollinations.ai URL using the advanced FLUX model
-    image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=768&nologo=true&model=flux"
+    mermaid_code = prompt.strip()
+    # Strip markdown code blocks if the LLM adds them
+    if mermaid_code.startswith("```"):
+        parts = mermaid_code.split('\n')
+        if len(parts) >= 2:
+            mermaid_code = '\n'.join(parts[1:-1])
+            
+    encoded_chart = urllib.parse.quote(mermaid_code)
+    image_url = f"https://quickchart.io/mermaid?chart={encoded_chart}"
     
     # Return the direct markdown embedding syntax
-    return f"![Visual Aid]({image_url})"
+    return f"![Technical Diagram]({image_url})"
 
 @tool("Analyze Educational Image")
 def analyze_educational_image(image_path: str, context: str = "Explain the concepts shown in this educational image in detail.") -> str:
