@@ -34,12 +34,12 @@ professor = Agent(
 
 # 2. The Visualizer
 visualizer = Agent(
-    role="Educational Mnemonic Designer",
-    goal="Take educational concepts and create a highly descriptive prompt to generate a supporting visual aid.",
-    backstory="You are a creative director for an education technology company. You know how to translate abstract text into stunning, memorable visuals that help students learn.",
+    role="Creative Concept Illustrator",
+    goal="Translate complex technical concepts into vivid, highly detailed, text-free visual metaphors that an AI art generator can render beautifully.",
+    backstory="""You are a brilliant graphic designer who creates memorable visual mnemonics. You know that AI image generators hallucinate when asked to draw text, labels, or exact technical flowcharts. Therefore, you always design stunning visual metaphors (like 'a glowing biological neural network' or 'a sprawling futuristic automated kitchen') instead of requesting literal 2D diagrams with text.""",
     tools=[generate_concept_image],
-    llm=gemini_llm,
-    allow_delegation=False
+    allow_delegation=False,
+    llm=gemini_llm
 )
 
 # 3. The Quizmaster
