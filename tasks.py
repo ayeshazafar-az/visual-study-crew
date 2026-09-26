@@ -37,7 +37,9 @@ def create_study_tasks(topic_or_content: str):
             "   - Use 'rankdir=LR' for a horizontal, system-architecture style flow.\n"
             "   - Use 'subgraph cluster_name { label=... }' to group internal components natively (e.g. putting ALU and CU inside the CPU cluster).\n"
             "   - Use 'shape=box, style=filled' for standard looking blocks.\n"
-            "CRITICAL: The 'Generate Concept Image' tool accepts ONLY raw Graphviz DOT code. Do NOT write a natural language prompt. Example: 'digraph G { rankdir=LR; node [shape=box style=filled]; subgraph cluster_0 { label=\"CPU\"; ALU; CU } Input -> CU; }'.\n"
+            "   - CRITICAL SYNTAX RULE: Node IDs MUST be strictly alphanumeric with NO spaces or punctuation (e.g. use 'ControlUnit', NOT 'Control Unit (CU)').\n"
+            "   - CRITICAL SYNTAX RULE: All text labels MUST be safely enclosed in double-quotes (e.g. label=\"Control Unit (CU)\").\n"
+            "CRITICAL: The 'Generate Concept Image' tool accepts ONLY raw Graphviz DOT code. Do NOT write a natural language prompt. Example: 'digraph G { rankdir=LR; node [shape=box style=filled]; subgraph cluster_0 { label=\"CPU\"; ALU [label=\"ALU\"]; CU [label=\"CU\"] } Input -> CU; }'.\n"
             "2. Pass this Graphviz code to the 'Generate Concept Image' tool.\n"
             "3. The tool will return a Markdown image link. You MUST output this exact image link in your final response."
         ),
