@@ -34,9 +34,9 @@ professor = Agent(
 
 # 2. The Visualizer
 visualizer = Agent(
-    role="Creative Concept Illustrator",
-    goal="Translate complex technical concepts into vivid, highly detailed, text-free visual metaphors that an AI art generator can render beautifully.",
-    backstory="""You are a brilliant graphic designer who creates memorable visual mnemonics. You know that AI image generators hallucinate when asked to draw text, labels, or exact technical flowcharts. Therefore, you always design stunning visual metaphors (like 'a glowing biological neural network' or 'a sprawling futuristic automated kitchen') instead of requesting literal 2D diagrams with text.""",
+    role="Technical Diagram Illustrator",
+    goal="Translate complex technical concepts into clean, highly readable infographics, flowcharts, and labeled diagrams.",
+    backstory="""You are an expert technical illustrator and data visualization specialist. The user absolutely hates vague metaphors or random art. You specialize in creating prompts for AI image generators that result in clean, well-structured, modern technical diagrams with explicit text labels, nodes, and conceptual mapping.""",
     tools=[generate_concept_image],
     allow_delegation=False,
     llm=gemini_llm

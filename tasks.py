@@ -33,8 +33,8 @@ def create_study_tasks(topic_or_content: str):
     visualize_task = Task(
         description=(
             "Based on the Professor's explanation, identify the most difficult or abstract concept.\n"
-            "1. Write a highly detailed, vivid, and aesthetic image generation prompt for this concept.\n"
-            "CRITICAL: AI image generators CANNOT spell text! Do NOT ask for diagrams, labels, text, or flowcharts. Instead, ask for vivid visual metaphors (e.g., 'A sprawling futuristic glowing neon factory processing colorful data blocks acting as a CPU').\n"
+            "1. Write a highly detailed prompt for an image generator to create a labeled, conceptual diagram (e.g., 'A clean, modern flowchart of a CPU with clear text tags for ALU, Control Unit, and Registers').\n"
+            "CRITICAL: The user strictly wants labeled, conceptual, and technical diagrams. Do NOT generate random metaphorical abstract art. Ask the image generator for explicit text labels, flowchart arrows, and a clean infographic style.\n"
             "2. Pass this prompt to the 'Generate Concept Image' tool.\n"
             "3. The tool will return a Markdown image link. You MUST output this exact image link in your final response."
         ),
