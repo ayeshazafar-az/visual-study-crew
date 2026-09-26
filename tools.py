@@ -11,21 +11,20 @@ def generate_concept_image(prompt: str) -> str:
     Generates an educational image based on a descriptive prompt.
     Returns the markdown-formatted image link which must be embedded in the final report.
     """
-    mermaid_code = prompt.strip()
-    # Safely extract Mermaid block if LLM added conversational text
-    if "```mermaid" in mermaid_code:
-        mermaid_code = mermaid_code.split("```mermaid")[1].split("```")[0]
-    elif "```" in mermaid_code:
-        mermaid_code = mermaid_code.split("```")[1].split("```")[0]
+    graphviz_code = prompt.strip()
+    # Safely extract block if LLM added conversational text
+    if "```dot" in graphviz_code:
+        graphviz_code = graphviz_code.split("```dot")[1].split("```")[0]
+    elif "```graphviz" in graphviz_code:
+        graphviz_code = graphviz_code.split("```graphviz")[1].split("```")[0]
+    elif "```" in graphviz_code:
+        graphviz_code = graphviz_code.split("```")[1].split("```")[0]
         
-    mermaid_code = mermaid_code.strip()
+    graphviz_code = graphviz_code.strip()
     
-    # Kroki mathematically expects zlib compression + URL-safe Base64
-    import zlib
-    import base64
-    compressed = zlib.compress(mermaid_code.encode('utf-8'), 9)
-    encoded_chart = base64.urlsafe_b64encode(compressed).decode('utf-8')
-    image_url = f"https://kroki.io/mermaid/png/{encoded_chart}"
+    import urllib.parse
+    encoded_chart = urllib.parse.quote(graphviz_code)
+    image_url = f"https://quickchart.io/graphviz?graph={encoded_chart}"
     
     # Return the direct markdown embedding syntax
     return f"![Technical Diagram]({image_url})"

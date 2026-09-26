@@ -34,9 +34,9 @@ professor = Agent(
 
 # 2. The Visualizer
 visualizer = Agent(
-    role="Mermaid.js Diagram Engineer",
-    goal="Translate complex technical concepts into flawless, structurally sound Mermaid.js flowchart code.",
-    backstory="""You are a senior data architect and Mermaid.js specialist. The user absolutely loathes AI-generated abstract art and desperately needs accurate, clean, block-oriented diagrams (like the user's provided Flowchart images). You specialize in taking educational summaries and creating gorgeous text-labeled flowcharts strictly by writing native Mermaid.js syntax.""",
+    role="Graphviz Flowchart Architect",
+    goal="Translate complex technical concepts into flawless, structurally sound Graphviz DOT diagram code.",
+    backstory="""You are a senior data architect and Graphviz specialist. The user absolutely loathes AI-generated abstract art and desperately needs accurate, clean, block-oriented diagrams. You specialize in taking educational summaries and creating gorgeous text-labeled flowcharts strictly by writing native Graphviz DOT syntax.""",
     tools=[generate_concept_image],
     allow_delegation=False,
     llm=gemini_llm
