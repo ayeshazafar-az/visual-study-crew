@@ -12,37 +12,31 @@ load_dotenv(override=True)
 # --- UI CONFIGURATION ---
 st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layout="wide")
 
-# Custom CSS for a beautiful, highly animated UI
+# Custom CSS for a beautiful, highly animated Dark UI
 st.markdown("""
     <style>
-    /* 1. Moving Animated Gradient Background */
+    /* 1. Subtle Animated Grain/Glow on Dark Background */
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #f5f7fa, #c2e9fb);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-    }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        background: radial-gradient(circle at top, #1e1e2f 0%, #09090b 40%);
     }
 
-    /* 2. Slide-up Fade Entry Animation for Main App */
+    /* 2. Slide-up Fade Entry Animation (Fixed cutoff issue) */
     [data-testid="stMainBlockContainer"] {
-        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         opacity: 0;
-        transform: translateY(40px);
+        transform: translateY(30px);
+        padding-top: 4rem !important; /* Forces header far down enough to never be hidden */
     }
     @keyframes slideUpFade {
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 3. Gorgeous Gradient Header with Shimmer */
+    /* 3. Gorgeous Neon Gradient Header with Shimmer */
     .main-header {
-        font-size: 3.5rem;
+        font-size: 3.8rem;
         font-weight: 900;
         margin-bottom: 0px;
-        background: linear-gradient(90deg, #6C5CE7, #00CEC9, #6C5CE7);
+        background: linear-gradient(90deg, #00f2fe, #4facfe, #00f2fe);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -56,51 +50,45 @@ st.markdown("""
     /* 4. Sleek Sub Header */
     .sub-header {
         font-size: 1.2rem;
-        color: #636E72;
+        color: #a1a1aa;
         margin-bottom: 30px;
         font-weight: 400;
     }
 
-    /* 5. Beautiful Animated Button */
+    /* 5. Premium Glowing Cyber-Button */
     .stButton>button {
-        background: linear-gradient(135deg, #6C5CE7 0%, #00CEC9 100%);
-        color: white;
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: #09090b !important;
         font-size: 18px;
-        font-weight: bold;
-        border-radius: 50px; /* Pillow-shaped friendly button */
+        font-weight: 900;
+        border-radius: 12px;
         padding: 15px 30px;
         border: none;
-        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        overflow: hidden;
         position: relative;
     }
     .stButton>button:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6);
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
     .stButton>button:active {
         transform: translateY(1px);
     }
 
-    /* 6. Frosted Glass Input Container */
+    /* 6. Dark Frosted Glass Input Container */
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
-        background: rgba(255, 255, 255, 0.6) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.8) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1) !important;
-        transition: transform 0.3s ease;
+        background: rgba(30, 30, 46, 0.5) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        transition: all 0.3s ease;
     }
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        transform: translateY(-2px);
-    }
-
-    /* General Spacing */
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        border: 1px solid rgba(0, 242, 254, 0.4) !important;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.1) !important;
     }
     </style>
 """, unsafe_allow_html=True)
