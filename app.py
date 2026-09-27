@@ -234,9 +234,17 @@ with st.sidebar:
 # Main Screen Router
 if len(st.session_state.messages) == 0:
     # --- EMPTY STATE DASHBOARD ---
-    st.markdown("""
+    current_hour = datetime.datetime.now().hour
+    if current_hour < 12:
+        greeting = "Good Morning"
+    elif current_hour < 18:
+        greeting = "Good Afternoon"
+    else:
+        greeting = "Good Evening"
+        
+    st.markdown(f"""
         <h1 style='font-size: 3.5rem; font-weight: 800; background: linear-gradient(90deg, #00C6FF, #7B2CBF, #FF007A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0px;'>
-            Good Evening, Explorer.
+            {greeting}, Explorer.
         </h1>
         <p style='font-size: 1.2rem; color: #B1A9D4; margin-bottom: 3rem;'>
             Build, analyze, and automate learning with multi-agent AI.
