@@ -2,8 +2,8 @@ import streamlit as st
 import os
 import PyPDF2
 from dotenv import load_dotenv
-from crewai import Crew
-from agents import professor, visualizer, quizmaster, gemini_fallback_llm
+from crewai import Crew, Process
+from agents import professor, visualizer, quizmaster, gemini_fallback_llm, gemini_llm
 from tasks import create_study_tasks
 
 # Force reload from .env
@@ -362,6 +362,8 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                 study_crew = Crew(
                     agents=[professor, visualizer, quizmaster],
                     tasks=tasks,
+                    process=Process.hierarchical,
+                    manager_llm=gemini_llm,
                     verbose=False 
                 )
                 
@@ -376,7 +378,13 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                             professor.llm = gemini_fallback_llm
                             visualizer.llm = gemini_fallback_llm
                             quizmaster.llm = gemini_fallback_llm
-                            study_crew = Crew(agents=[professor, visualizer, quizmaster], tasks=tasks, verbose=False)
+                            study_crew = Crew(
+                                agents=[professor, visualizer, quizmaster], 
+                                tasks=tasks, 
+                                process=Process.hierarchical,
+                                manager_llm=gemini_fallback_llm,
+                                verbose=False
+                            )
                         else:
                             raise e 
                 

@@ -63,7 +63,7 @@ def create_study_tasks(topic_or_content: str, mode="default"):
 
     visualize_task = Task(
         description=(
-            "Based on the Professor's explanation, identify the structural components.\n"
+            "Identify the key structural components of the educational material.\n"
             "1. Write clean Graphviz DOT syntax representing a BLOCK DIAGRAM (rankdir=LR).\n"
             "   - CRITICAL: Node IDs MUST be strictly alphanumeric with NO spaces.\n"
             "   - CRITICAL: Text labels must be in double-quotes.\n"
@@ -76,12 +76,12 @@ def create_study_tasks(topic_or_content: str, mode="default"):
 
     compile_task = Task(
         description=(
-            "1. Take the Professor's breakdown and the Visualizer's image link.\n"
-            "2. Generate a 'Practice Quiz' section with 3 MCQs and an Answer Key.\n"
-            "3. Compile everything into a beautiful final Markdown Study Guide."
+            "1. Perform a final review of the generated content.\n"
+            "2. Generate a 'Practice Quiz' section with 3 MCQs and an Answer Key based on the topic.\n"
+            "3. Combine the Professor's Concept Breakdown, the Visualizer's Image Link, and your Practice Quiz into a single, beautifully structured Markdown Study Guide."
         ),
-        expected_output="A complete Markdown study guide.",
-        agent=quizmaster
+        expected_output="A final, masterfully compiled Markdown study guide.",
+        agent=None # The Manager decides who compiles, or the agent can take it
     )
 
     return [explain_task, visualize_task, compile_task]
