@@ -12,90 +12,66 @@ load_dotenv(override=True)
 # --- UI CONFIGURATION ---
 st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layout="wide")
 
-# Custom CSS for a beautiful, highly animated Dark UI
+# Custom CSS for a Clean, Minimalist Developer UI (GitHub/Linear style)
 st.markdown("""
     <style>
-    /* 1. Deep Slate Navy Background (NO Black) */
+    /* Clean static dark background without animations */
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(-45deg, #0b1120, #0f172a, #1e293b, #0f172a);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-    }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        background-color: #0d1117;
     }
 
-    /* 2. Slide-up Fade Entry Animation */
-    [data-testid="stMainBlockContainer"] {
-        animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        opacity: 0;
-        transform: translateY(30px);
-        padding-top: 4rem !important; 
-    }
-    @keyframes slideUpFade {
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 3. Gorgeous Emerald/Ocean Header */
+    /* Professional, crisp typography */
     .main-header {
-        font-size: 3.8rem;
-        font-weight: 900;
+        font-size: 3rem;
+        font-weight: 700;
+        color: #ffffff;
         margin-bottom: 0px;
-        background: linear-gradient(90deg, #10b981, #0ea5e9, #10b981);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: textShimmer 4s linear infinite;
-        line-height: 1.2;
+        letter-spacing: -0.5px;
     }
-    @keyframes textShimmer {
-        to { background-position: 200% center; }
-    }
-
-    /* 4. Sleek Sub Header */
+    
     .sub-header {
-        font-size: 1.2rem;
-        color: #94a3b8;
+        font-size: 1.1rem;
+        color: #8b949e;
         margin-bottom: 30px;
         font-weight: 400;
     }
 
-    /* 5. Premium Glowing Emerald Button */
+    /* Minimalist Primary Action Button */
     .stButton>button {
-        background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+        background-color: #238636;
         color: #ffffff !important;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 10px;
-        padding: 15px 30px;
-        border: none;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        position: relative;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 10px 20px;
+        border: 1px solid rgba(240, 246, 252, 0.1);
+        transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+        box-shadow: none;
     }
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-        background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
-    }
-    .stButton>button:active {
-        transform: translateY(1px);
+        background-color: #2ea043;
+        border-color: rgba(240, 246, 252, 0.1);
+        transform: none;
+        box-shadow: none;
     }
 
-    /* 6. Slate Frosted Glass Input Container */
+    /* Clean Input Container without distracting blurs or glows */
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
-        background: rgba(30, 41, 59, 0.6) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
-        transition: all 0.3s ease;
+        background-color: #0d1117 !important;
+        border: 1px solid #30363d !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        transition: border-color 0.2s ease;
     }
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border: 1px solid rgba(16, 185, 129, 0.3) !important;
-        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1) !important;
+        border-color: #8b949e !important;
+        box-shadow: none !important;
+    }
+    
+    /* Remove heavy paddings */
+    .block-container {
+        padding-top: 3rem;
+        padding-bottom: 2rem;
     }
     </style>
 """, unsafe_allow_html=True)
