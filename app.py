@@ -133,27 +133,63 @@ st.markdown("""
 
 # --- SESSION MEMORY ---
 import json
+import uuid
+import datetime
+import re
 
-HISTORY_FILE = "chat_history.json"
+HISTORY_FILE = "chat_history_v2.json"
 
-def load_history():
+def load_all_sessions():
     if os.path.exists(HISTORY_FILE):
         try:
             with open(HISTORY_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
-            return []
-    return []
+            pass
+    return {}
 
-def save_history(messages):
+def save_all_sessions(sessions_dict):
     try:
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(messages, f, indent=4)
+            json.dump(sessions_dict, f, indent=4)
     except Exception:
         pass
 
+if "sessions_db" not in st.session_state:
+    st.session_state.sessions_db = load_all_sessions()
+
+if "active_session_id" not in st.session_state:
+    st.session_state.active_session_id = str(uuid.uuid4())
+    
 if "messages" not in st.session_state:
-    st.session_state.messages = load_history()
+    # On first load, check if the current active session has messages in the DB
+    active_id = st.session_state.active_session_id
+    if active_id in st.session_state.sessions_db:
+        st.session_state.messages = st.session_state.sessions_db[active_id].get("messages", [])
+    else:
+        st.session_state.messages = []
+
+def save_current_history():
+    active_id = st.session_state.active_session_id
+    title = "New Chat"
+    messages = st.session_state.messages
+    for m in messages:
+        if m["role"] == "user":
+            clean_text = re.sub(r'\[MODE:.*?\]', '', m["content"]).replace('Context Provided:', '').strip()
+            title = clean_text[:30] + "..." if len(clean_text) > 30 else clean_text
+            break
+            
+    st.session_state.sessions_db[active_id] = {
+        "title": title,
+        "messages": messages,
+        "timestamp": datetime.datetime.now().isoformat()
+    }
+    save_all_sessions(st.session_state.sessions_db)
+
+# Alias to prevent breaking older code
+def save_history(messages):
+    save_current_history()
+
 if "selected_action" not in st.session_state:
     st.session_state.selected_action = None
 
@@ -168,10 +204,19 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     if st.button("✨ New Chat", use_container_width=True):
+        st.session_state.active_session_id = str(uuid.uuid4())
         st.session_state.messages = []
-        save_history([])
         st.rerun()
         
+    st.markdown("---")
+    st.markdown("### Chat History")
+    sorted_sessions = sorted(st.session_state.sessions_db.items(), key=lambda x: x[1].get("timestamp", ""), reverse=True)
+    for sid, sdata in sorted_sessions:
+        if st.button(f"🗨️ {sdata.get('title', 'New Chat')}", key=f"btn_{sid}", use_container_width=True):
+            st.session_state.active_session_id = sid
+            st.session_state.messages = sdata.get("messages", [])
+            st.rerun()
+            
     st.markdown("---")
     st.markdown("### Quick Actions")
     st.button("📁 Upload Context", use_container_width=True)
