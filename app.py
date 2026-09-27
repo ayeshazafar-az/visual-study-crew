@@ -76,6 +76,8 @@ st.markdown("""
 # --- SESSION MEMORY ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "selected_action" not in st.session_state:
+    st.session_state.selected_action = None
 
 # --- APP LAYOUT ---
 
@@ -117,41 +119,74 @@ if len(st.session_state.messages) == 0:
         </p>
     """, unsafe_allow_html=True)
     
-    # Grid of Suggested Actions
-    st.markdown("### Suggested Actions")
-    row1_col1, row1_col2 = st.columns(2)
-    
-    with row1_col1:
+    # Action Selection Router
+    if not st.session_state.selected_action:
+        # Grid of Suggested Actions
+        st.markdown("### Suggested Actions")
+        row1_col1, row1_col2 = st.columns(2)
+        
+        with row1_col1:
+            with st.container(border=True):
+                if st.button("🎓 Blueprint a Syllabus", use_container_width=True):
+                    st.session_state.selected_action = "syllabus"
+                    st.rerun()
+                st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Generate a full learning plan.</div>", unsafe_allow_html=True)
+                
+        with row1_col2:
+            with st.container(border=True):
+                if st.button("🖼️ Analyze Diagram", use_container_width=True):
+                    st.session_state.selected_action = "default"
+                    st.rerun()
+                st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Upload an image to break it down.</div>", unsafe_allow_html=True)
+                
+        row2_col1, row2_col2 = st.columns(2)
+        
+        with row2_col1:
+            with st.container(border=True):
+                if st.button("📝 Create Flashcards", use_container_width=True):
+                    st.session_state.selected_action = "flashcards"
+                    st.rerun()
+                st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Extract key terms for review.</div>", unsafe_allow_html=True)
+                
+        with row2_col2:
+            with st.container(border=True):
+                if st.button("🧩 Interactive Quiz", use_container_width=True):
+                    st.session_state.selected_action = "quiz"
+                    st.rerun()
+                st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Test your knowledge on a topic.</div>", unsafe_allow_html=True)
+                
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+    else:
+        # Intermediate Context Form
+        action_map = {
+            "syllabus": ("🎓 Blueprint a Syllabus", "[MODE:syllabus] Please generate a complete syllabus and step-by-step learning plan using this context."),
+            "default": ("🖼️ Analyze Diagram", "[MODE:default] Please analyze the provided context/image and break down the architecture step-by-step."),
+            "flashcards": ("📝 Create Flashcards", "[MODE:flashcards] Please extract the key concepts from this context and generate formatted study flashcards."),
+            "quiz": ("🧩 Interactive Quiz", "[MODE:quiz] Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on this context.")
+        }
+        
+        act_title, act_prompt = action_map.get(st.session_state.selected_action, ("", ""))
+        
         with st.container(border=True):
-            if st.button("🎓 Blueprint a Syllabus", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": "[MODE:syllabus] Please generate a complete syllabus and step-by-step learning plan for my given topic."})
-                st.rerun()
-            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Generate a full learning plan.</div>", unsafe_allow_html=True)
+            st.markdown(f"### {act_title}")
+            st.markdown("<p style='color:#a1a1aa;'>Please provide the source material you would like the AI agents to process.</p>", unsafe_allow_html=True)
             
-    with row1_col2:
-        with st.container(border=True):
-            if st.button("🖼️ Analyze Diagram", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": "[MODE:default] Please analyze the attached context/image and break down the architecture step-by-step."})
-                st.rerun()
-            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Upload an image to break it down.</div>", unsafe_allow_html=True)
+            pasted_text = st.text_area("Paste text context (Optional):", height=150)
             
-    row2_col1, row2_col2 = st.columns(2)
-    
-    with row2_col1:
-        with st.container(border=True):
-            if st.button("📝 Create Flashcards", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": "[MODE:flashcards] Please extract the key concepts and terms from my context and generate formatted study flashcards."})
-                st.rerun()
-            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Extract key terms for review.</div>", unsafe_allow_html=True)
-            
-    with row2_col2:
-        with st.container(border=True):
-            if st.button("🧩 Interactive Quiz", use_container_width=True):
-                st.session_state.messages.append({"role": "user", "content": "[MODE:quiz] Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on my context."})
-                st.rerun()
-            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Test your knowledge on a topic.</div>", unsafe_allow_html=True)
-            
-    st.markdown("<br>", unsafe_allow_html=True)
+            cola, colb = st.columns([1, 3])
+            with cola:
+                if st.button("⬅️ Back"):
+                    st.session_state.selected_action = None
+                    st.rerun()
+            with colb:
+                if st.button("✨ Generate Now", use_container_width=True):
+                    # We inject the inputted context directly into the prompt payload alongside the mode.
+                    payload = f"{act_prompt}\n\nContext Provided:\n{pasted_text}"
+                    st.session_state.messages.append({"role": "user", "content": payload})
+                    st.session_state.selected_action = None
+                    st.rerun()
+        st.markdown("<br>", unsafe_allow_html=True)
             
     # Secondary Grid (Agent Status and Diagnostics)
     eco1, eco2 = st.columns([2, 1])
