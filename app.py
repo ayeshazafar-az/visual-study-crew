@@ -122,21 +122,29 @@ if len(st.session_state.messages) == 0:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        if st.button("🎓 Blueprint a Syllabus\n\nGenerate a full learning plan.", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": "Please generate a complete syllabus and step-by-step learning plan for my given topic."})
-            st.rerun()
+        with st.container(border=True):
+            if st.button("🎓 Blueprint a Syllabus", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "[MODE:syllabus] Please generate a complete syllabus and step-by-step learning plan for my given topic."})
+                st.rerun()
+            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Generate a full learning plan.</div>", unsafe_allow_html=True)
     with col2:
-        if st.button("🖼️ Analyze Diagram\n\nUpload an image to break it down.", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": "Please analyze the attached context/image and break down the architecture step-by-step."})
-            st.rerun()
+        with st.container(border=True):
+            if st.button("🖼️ Analyze Diagram", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "[MODE:default] Please analyze the attached context/image and break down the architecture step-by-step."})
+                st.rerun()
+            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Upload an image to break it down.</div>", unsafe_allow_html=True)
     with col3:
-        if st.button("📝 Create Flashcards\n\nExtract key terms for review.", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": "Please extract the key concepts and terms from my context and generate formatted study flashcards."})
-            st.rerun()
+        with st.container(border=True):
+            if st.button("📝 Create Flashcards", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "[MODE:flashcards] Please extract the key concepts and terms from my context and generate formatted study flashcards."})
+                st.rerun()
+            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Extract key terms for review.</div>", unsafe_allow_html=True)
     with col4:
-        if st.button("🧩 Interactive Quiz\n\nTest your knowledge on a topic.", use_container_width=True):
-            st.session_state.messages.append({"role": "user", "content": "Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on my context."})
-            st.rerun()
+        with st.container(border=True):
+            if st.button("🧩 Interactive Quiz", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "[MODE:quiz] Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on my context."})
+                st.rerun()
+            st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Test your knowledge on a topic.</div>", unsafe_allow_html=True)
             
     st.markdown("<br>", unsafe_allow_html=True)
             
@@ -164,10 +172,31 @@ if len(st.session_state.messages) == 0:
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
 else:
+    import re
     # --- CHAT UI ---
-    for msg in st.session_state.messages:
+    def generate_pdf_bytes(md_content):
+        from fpdf import FPDF
+        import markdown
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Helvetica", size=11)
+        # Strip simple non-latin chars and emojis for basic FPDF 
+        clean_md = md_content.encode('latin-1', 'ignore').decode('latin-1')
+        html = markdown.markdown(clean_md)
+        try:
+            pdf.write_html(html)
+        except Exception as e:
+            pdf.multi_cell(0, 8, text=f"-- PDF Html Warning --\n\n{clean_md}")
+        return bytes(pdf.output())
+
+    for i, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"]):
-            st.markdown(msg["content"], unsafe_allow_html=True)
+            clean_display = re.sub(r"\[MODE:(.*?)\]\s*", "", msg["content"])
+            st.markdown(clean_display, unsafe_allow_html=True)
+            
+            if msg["role"] == "assistant":
+                pdf_data = generate_pdf_bytes(clean_display)
+                st.download_button("⬇️ Download as PDF", data=pdf_data, file_name=f"StudyForge_Export.pdf", mime="application/pdf", key=f"dl_pdf_{i}")
             
     st.write("") # Spacer
 
@@ -181,7 +210,18 @@ if prompt := st.chat_input("Ask a question to Nova (Your AI Assistant)..."):
 
 # Processing logic (Triggers after rerun clears the dashboard)
 if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
-    prompt = st.session_state.messages[-1]["content"]
+    raw_prompt = st.session_state.messages[-1]["content"]
+    
+    import re
+    mode = "default"
+    mode_match = re.search(r"\[MODE:(.*?)\]\s*", raw_prompt)
+    if mode_match:
+        mode = mode_match.group(1)
+        clean_prompt = raw_prompt.replace(mode_match.group(0), "")
+        st.session_state.messages[-1]["content"] = clean_prompt
+        prompt = clean_prompt
+    else:
+        prompt = raw_prompt
     
     study_material = ""
     chat_history = ""
@@ -218,8 +258,8 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
     with st.chat_message("assistant"):
         with st.status("🧠 Agents are thinking...", expanded=True) as status:
             try:
-                st.write("👨‍🏫 Professor analyzing context & history...")
-                tasks = create_study_tasks(study_material)
+                st.write(f"👨‍🏫 Orchestrating learning tasks (Mode: {mode.upper()})...")
+                tasks = create_study_tasks(study_material, mode=mode)
                 
                 study_crew = Crew(
                     agents=[professor, visualizer, quizmaster],

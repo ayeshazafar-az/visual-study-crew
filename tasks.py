@@ -1,22 +1,45 @@
 from crewai import Task
 from agents import professor, visualizer, quizmaster
 
-def create_study_tasks(topic_or_content: str):
+def create_study_tasks(topic_or_content: str, mode="default"):
     """
     Creates and returns the sequential tasks for the study crew.
-    It takes the dynamic input (either a typed topic or extracted file text) 
-    from the Streamlit app.
+    Allows for dynamic task routing based on the selected mode.
     """
     
-    # Check if the input is an image path
-    is_image = topic_or_content.startswith("[IMAGE_PATH]")
+    is_image = "[IMAGE_PATH]" in topic_or_content
+    image_instruction = ""
     if is_image:
-        image_path = topic_or_content.replace("[IMAGE_PATH]", "").strip()
-        image_instruction = f"CRITICAL: You MUST use the 'Analyze Educational Image' tool right now passing '{image_path}' as the image_path argument. Do not hallucinate! Read the diagram first!"
-    else:
-        image_instruction = ""
-    
-    # Task 1: The Professor explains the core concept
+        image_instruction = "CRITICAL: The prompt contains an [IMAGE_PATH]. You MUST use the 'Analyze Educational Image' tool on it."
+
+    if mode == "flashcards":
+        return [
+            Task(
+                description=f"Analyze the following material: '{topic_or_content}'. {image_instruction}\nExtract exactly the key terms and concepts and format them strictly as a Markdown structured list of Flashcards (Term: Definition). Do not add any conversational padding.",
+                expected_output="A Markdown list of study flashcards.",
+                agent=professor
+            )
+        ]
+        
+    elif mode == "quiz":
+        return [
+            Task(
+                description=f"Analyze the following material: '{topic_or_content}'. {image_instruction}\nGenerate a complete, challenging Interactive Quiz (5 multiple choice, 2 short answer) based on the context. Append an Answer Key at the very bottom.",
+                expected_output="A complete Markdown practice quiz with answer key.",
+                agent=quizmaster
+            )
+        ]
+
+    elif mode == "syllabus":
+        return [
+            Task(
+                description=f"Analyze the following material: '{topic_or_content}'. {image_instruction}\nGenerate a comprehensive, week-by-week syllabus and structured learning blueprint for this topic.",
+                expected_output="A Markdown syllabus outlining a learning curriculum.",
+                agent=professor
+            )
+        ]
+
+    # --- DEFAULT FULL MODE ---
     explain_task = Task(
         description=(
             f"Analyze the following material: '{topic_or_content}'.\n"
@@ -25,38 +48,30 @@ def create_study_tasks(topic_or_content: str):
             "2. Write a clear, beginner-friendly explanation using analogies.\n"
             "3. Format this as the 'Concept Breakdown' section."
         ),
-        expected_output="A detailed, beginner-friendly explanation of the core concepts formatted in Markdown. If the input was an image, the explanation should be based on the image's contents.",
+        expected_output="A detailed, beginner-friendly explanation of the core concepts formatted in Markdown.",
         agent=professor
     )
 
-    # Task 2: The Visualizer creates the image
     visualize_task = Task(
         description=(
-            "Based on the Professor's explanation, identify the structural components of the core concept.\n"
-            "1. Write valid, clean Graphviz DOT syntax that strictly represents a professional BLOCK DIAGRAM.\n"
-            "   - Use 'rankdir=LR' for a horizontal, system-architecture style flow.\n"
-            "   - Use 'subgraph cluster_name { label=... }' to group internal components natively (e.g. putting ALU and CU inside the CPU cluster).\n"
-            "   - Use 'shape=box, style=filled' for standard looking blocks.\n"
-            "   - CRITICAL SYNTAX RULE: Node IDs MUST be strictly alphanumeric with NO spaces or punctuation (e.g. use 'ControlUnit', NOT 'Control Unit (CU)').\n"
-            "   - CRITICAL SYNTAX RULE: All text labels MUST be safely enclosed in double-quotes (e.g. label=\"Control Unit (CU)\").\n"
-            "CRITICAL: The 'Generate Concept Image' tool accepts ONLY raw Graphviz DOT code. Do NOT write a natural language prompt. Example: 'digraph G { rankdir=LR; node [shape=box style=filled]; subgraph cluster_0 { label=\"CPU\"; ALU [label=\"ALU\"]; CU [label=\"CU\"] } Input -> CU; }'.\n"
-            "2. Pass this Graphviz code to the 'Generate Concept Image' tool.\n"
-            "3. The tool will return a Markdown image link. You MUST output this exact image link in your final response."
+            "Based on the Professor's explanation, identify the structural components.\n"
+            "1. Write clean Graphviz DOT syntax representing a BLOCK DIAGRAM (rankdir=LR).\n"
+            "   - CRITICAL: Node IDs MUST be strictly alphanumeric with NO spaces.\n"
+            "   - CRITICAL: Text labels must be in double-quotes.\n"
+            "2. Pass this DOT code to the 'Generate Concept Image' tool.\n"
+            "3. Return the exact Markdown image link outputted by the tool."
         ),
         expected_output="The exact Markdown image link generated by the tool.",
         agent=visualizer
     )
 
-    # Task 3: The Quizmaster compiles everything
     compile_task = Task(
         description=(
-            "You are responsible for the final Study Guide.\n"
-            "1. Take the Professor's 'Concept Breakdown'.\n"
-            "2. Take the Visualizer's image link and embed it immediately after the breakdown.\n"
-            "3. Generate a 'Practice Quiz' section with 3 multiple-choice questions based on the material, including an Answer Key at the very bottom.\n"
-            "4. Combine everything into a single, beautifully structured Markdown document."
+            "1. Take the Professor's breakdown and the Visualizer's image link.\n"
+            "2. Generate a 'Practice Quiz' section with 3 MCQs and an Answer Key.\n"
+            "3. Compile everything into a beautiful final Markdown Study Guide."
         ),
-        expected_output="A complete Markdown study guide containing the explanation, the generated image, and a practice quiz.",
+        expected_output="A complete Markdown study guide.",
         agent=quizmaster
     )
 
