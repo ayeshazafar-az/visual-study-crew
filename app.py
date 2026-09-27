@@ -119,27 +119,32 @@ if len(st.session_state.messages) == 0:
     
     # Grid of Suggested Actions
     st.markdown("### Suggested Actions")
-    col1, col2, col3, col4 = st.columns(4)
+    row1_col1, row1_col2 = st.columns(2)
     
-    with col1:
+    with row1_col1:
         with st.container(border=True):
             if st.button("🎓 Blueprint a Syllabus", use_container_width=True):
                 st.session_state.messages.append({"role": "user", "content": "[MODE:syllabus] Please generate a complete syllabus and step-by-step learning plan for my given topic."})
                 st.rerun()
             st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Generate a full learning plan.</div>", unsafe_allow_html=True)
-    with col2:
+            
+    with row1_col2:
         with st.container(border=True):
             if st.button("🖼️ Analyze Diagram", use_container_width=True):
                 st.session_state.messages.append({"role": "user", "content": "[MODE:default] Please analyze the attached context/image and break down the architecture step-by-step."})
                 st.rerun()
             st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Upload an image to break it down.</div>", unsafe_allow_html=True)
-    with col3:
+            
+    row2_col1, row2_col2 = st.columns(2)
+    
+    with row2_col1:
         with st.container(border=True):
             if st.button("📝 Create Flashcards", use_container_width=True):
                 st.session_state.messages.append({"role": "user", "content": "[MODE:flashcards] Please extract the key concepts and terms from my context and generate formatted study flashcards."})
                 st.rerun()
             st.markdown("<div style='text-align:center; font-size:0.8rem; color:#a1a1aa; margin-top:-10px; padding-bottom:10px;'>Extract key terms for review.</div>", unsafe_allow_html=True)
-    with col4:
+            
+    with row2_col2:
         with st.container(border=True):
             if st.button("🧩 Interactive Quiz", use_container_width=True):
                 st.session_state.messages.append({"role": "user", "content": "[MODE:quiz] Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on my context."})
