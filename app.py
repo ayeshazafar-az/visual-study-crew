@@ -122,21 +122,21 @@ if len(st.session_state.messages) == 0:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        with st.container(border=True):
-            st.markdown("🎓 **Blueprint a Syllabus**")
-            st.markdown("<small style='color:#a1a1aa;'>Generate a full learning plan.</small>", unsafe_allow_html=True)
+        if st.button("🎓 Blueprint a Syllabus\n\nGenerate a full learning plan.", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": "Please generate a complete syllabus and step-by-step learning plan for my given topic."})
+            st.rerun()
     with col2:
-        with st.container(border=True):
-            st.markdown("🖼️ **Analyze Diagram**")
-            st.markdown("<small style='color:#a1a1aa;'>Upload an image to break it down.</small>", unsafe_allow_html=True)
+        if st.button("🖼️ Analyze Diagram\n\nUpload an image to break it down.", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": "Please analyze the attached context/image and break down the architecture step-by-step."})
+            st.rerun()
     with col3:
-        with st.container(border=True):
-            st.markdown("📝 **Create Flashcards**")
-            st.markdown("<small style='color:#a1a1aa;'>Extract key terms for review.</small>", unsafe_allow_html=True)
+        if st.button("📝 Create Flashcards\n\nExtract key terms for review.", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": "Please extract the key concepts and terms from my context and generate formatted study flashcards."})
+            st.rerun()
     with col4:
-        with st.container(border=True):
-            st.markdown("🧩 **Interactive Quiz**")
-            st.markdown("<small style='color:#a1a1aa;'>Test your knowledge on a topic.</small>", unsafe_allow_html=True)
+        if st.button("🧩 Interactive Quiz\n\nTest your knowledge on a topic.", use_container_width=True):
+            st.session_state.messages.append({"role": "user", "content": "Please generate a comprehensive, interactive-style quiz (multiple choice and short answer) based on my context."})
+            st.rerun()
             
     st.markdown("<br>", unsafe_allow_html=True)
             
