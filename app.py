@@ -15,28 +15,47 @@ st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layou
 # Custom CSS for a polished look
 st.markdown("""
     <style>
-    .stButton>button {
-        background-color: #2E86C1;
-        color: white;
-        font-size: 18px;
-        border-radius: 8px;
-        padding: 15px 24px;
-        border: none;
-        transition: 0.3s;
-    }
-    .stButton>button:hover {
-        background-color: #1B4F72;
-    }
+    /* Gradient Main Header */
     .main-header {
-        font-size: 2.8rem;
-        color: #1B4F72;
-        font-weight: 800;
+        font-size: 3.5rem;
+        font-weight: 900;
         margin-bottom: 0px;
+        background: -webkit-linear-gradient(45deg, #00D2FF, #10B981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
     }
+    /* Sleek Sub Header */
     .sub-header {
         font-size: 1.2rem;
-        color: #5D6D7E;
+        color: #94A3B8;
         margin-bottom: 30px;
+        font-weight: 300;
+    }
+    /* Premium Glassmorphic Button */
+    .stButton>button {
+        background: linear-gradient(135deg, #00D2FF 0%, #10B981 100%);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 12px;
+        padding: 15px 24px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+    }
+    /* Hide some default Streamlit paddings slightly */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    /* Container styling for unified field */
+    [data-testid="stVerticalBlock"] {
+        border-radius: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
