@@ -447,10 +447,10 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                 status.update(label="✅ Response Generated", state="complete", expanded=False)
                 
                 final_text = result.raw if hasattr(result, 'raw') else str(result)
-                st.markdown(final_text, unsafe_allow_html=True)
                 
                 st.session_state.messages.append({"role": "assistant", "content": final_text})
                 save_history(st.session_state.messages)
+                st.rerun()
                 
             except Exception as e:
                 status.update(label="❌ Generation Failed", state="error")
