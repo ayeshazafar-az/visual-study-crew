@@ -132,8 +132,28 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- SESSION MEMORY ---
+import json
+
+HISTORY_FILE = "chat_history.json"
+
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+
+def save_history(messages):
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(messages, f, indent=4)
+    except Exception:
+        pass
+
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = load_history()
 if "selected_action" not in st.session_state:
     st.session_state.selected_action = None
 
@@ -149,6 +169,7 @@ with st.sidebar:
     
     if st.button("✨ New Chat", use_container_width=True):
         st.session_state.messages = []
+        save_history([])
         st.rerun()
         
     st.markdown("---")
@@ -239,9 +260,9 @@ if len(st.session_state.messages) == 0:
                     st.rerun()
             with colb:
                 if st.button("✨ Generate Now", use_container_width=True):
-                    # We inject the inputted context directly into the prompt payload alongside the mode.
                     payload = f"{act_prompt}\n\nContext Provided:\n{pasted_text}"
                     st.session_state.messages.append({"role": "user", "content": payload})
+                    save_history(st.session_state.messages)
                     st.session_state.selected_action = None
                     st.rerun()
         st.markdown("<br>", unsafe_allow_html=True)
@@ -304,6 +325,7 @@ with st.expander("📎 Attach Context (PDF or Image) to your next message"):
 
 if prompt := st.chat_input("Ask a question to Nova (Your AI Assistant)..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    save_history(st.session_state.messages)
     st.rerun() # Immediately rerun to show the empty state vanishing and the chat appending
 
 # Processing logic (Triggers after rerun clears the dashboard)
@@ -317,6 +339,7 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
         mode = mode_match.group(1)
         clean_prompt = raw_prompt.replace(mode_match.group(0), "")
         st.session_state.messages[-1]["content"] = clean_prompt
+        save_history(st.session_state.messages)
         prompt = clean_prompt
     else:
         prompt = raw_prompt
@@ -394,9 +417,11 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                 st.markdown(final_text, unsafe_allow_html=True)
                 
                 st.session_state.messages.append({"role": "assistant", "content": final_text})
+                save_history(st.session_state.messages)
                 
             except Exception as e:
                 status.update(label="❌ Generation Failed", state="error")
                 error_msg = f"An error occurred: {str(e)}"
                 st.error(error_msg)
                 st.session_state.messages.append({"role": "assistant", "content": f"⚠️ {error_msg}"})
+                save_history(st.session_state.messages)
