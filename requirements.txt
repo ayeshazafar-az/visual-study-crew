@@ -4,3 +4,5 @@ crewai-tools
 langchain-google-genai
 python-dotenv
 PyPDF2
+fpdf2
+markdown
