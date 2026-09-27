@@ -297,6 +297,7 @@ if len(st.session_state.messages) == 0:
             st.markdown("<p style='color:#a1a1aa;'>Please provide the source material you would like the AI agents to process.</p>", unsafe_allow_html=True)
             
             pasted_text = st.text_area("Paste text context (Optional):", height=150)
+            qa_upload = st.file_uploader("Upload Image/PDF (Optional)", type=["pdf", "png", "jpg", "jpeg"], key="qa_upload")
             
             cola, colb = st.columns([1, 3])
             with cola:
@@ -305,7 +306,24 @@ if len(st.session_state.messages) == 0:
                     st.rerun()
             with colb:
                 if st.button("✨ Generate Now", use_container_width=True):
-                    payload = f"{act_prompt}\n\nContext Provided:\n{pasted_text}"
+                    file_ref = ""
+                    if qa_upload:
+                        ext = qa_upload.name.split('.')[-1].lower()
+                        if ext == "pdf":
+                            import PyPDF2
+                            try:
+                                pdf_reader = PyPDF2.PdfReader(qa_upload)
+                                extracted = "\n".join([page.extract_text() for page in pdf_reader.pages if page.extract_text()])
+                                file_ref = f"\n\nAttached PDF Content:\n{extracted[:15000]}"
+                            except Exception as e:
+                                pass
+                        else:
+                            temp_path = "temp_upload.png" 
+                            with open(temp_path, "wb") as f:
+                                f.write(qa_upload.read())
+                            file_ref = f"\n\nImage Reference: [IMAGE_PATH] {temp_path}"
+                            
+                    payload = f"{act_prompt}\n\nContext Provided:\n{pasted_text}{file_ref}"
                     st.session_state.messages.append({"role": "user", "content": payload})
                     save_history(st.session_state.messages)
                     st.session_state.selected_action = None
