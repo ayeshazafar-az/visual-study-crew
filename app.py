@@ -131,64 +131,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- SESSION MEMORY ---
-import json
-import uuid
-import datetime
-import re
-
-HISTORY_FILE = "chat_history_v2.json"
-
-def load_all_sessions():
-    if os.path.exists(HISTORY_FILE):
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {}
-
-def save_all_sessions(sessions_dict):
+# --- PDF EXPORT ENGINE ---
+def generate_pdf_bytes(md_content):
+    from fpdf import FPDF
+    import markdown
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=11)
+    # Strip simple non-latin chars and emojis for basic FPDF 
+    clean_md = md_content.encode('latin-1', 'ignore').decode('latin-1')
+    html = markdown.markdown(clean_md)
     try:
-        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(sessions_dict, f, indent=4)
-    except Exception:
-        pass
+        pdf.write_html(html)
+    except Exception as e:
+        pdf.multi_cell(0, 8, text=f"-- PDF Html Warning --\n\n{clean_md}")
+    return bytes(pdf.output())
 
-if "sessions_db" not in st.session_state:
-    st.session_state.sessions_db = load_all_sessions()
-
-if "active_session_id" not in st.session_state:
-    st.session_state.active_session_id = str(uuid.uuid4())
-    
-if "messages" not in st.session_state:
-    # On first load, check if the current active session has messages in the DB
-    active_id = st.session_state.active_session_id
-    if active_id in st.session_state.sessions_db:
-        st.session_state.messages = st.session_state.sessions_db[active_id].get("messages", [])
-    else:
-        st.session_state.messages = []
-
-def save_current_history():
-    active_id = st.session_state.active_session_id
-    title = "New Chat"
-    messages = st.session_state.messages
-    for m in messages:
-        if m["role"] == "user":
-            clean_text = re.sub(r'\[MODE:.*?\]', '', m["content"]).replace('Context Provided:', '').strip()
-            title = clean_text[:30] + "..." if len(clean_text) > 30 else clean_text
-            break
-            
-    st.session_state.sessions_db[active_id] = {
-        "title": title,
-        "messages": messages,
-        "timestamp": datetime.datetime.now().isoformat()
-    }
-    save_all_sessions(st.session_state.sessions_db)
-
-# Alias to prevent breaking older code
+# --- SESSION MEMORY ---
 def save_history(messages):
-    save_current_history()
+    # Dummy function to maintain compatibility if called
+    pass
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 if "selected_action" not in st.session_state:
     st.session_state.selected_action = None
@@ -204,19 +169,23 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     if st.button("✨ New Chat", use_container_width=True):
-        st.session_state.active_session_id = str(uuid.uuid4())
         st.session_state.messages = []
         st.rerun()
         
     st.markdown("---")
-    st.markdown("### Chat History")
-    sorted_sessions = sorted(st.session_state.sessions_db.items(), key=lambda x: x[1].get("timestamp", ""), reverse=True)
-    for sid, sdata in sorted_sessions:
-        if st.button(f"🗨️ {sdata.get('title', 'New Chat')}", key=f"btn_{sid}", use_container_width=True):
-            st.session_state.active_session_id = sid
-            st.session_state.messages = sdata.get("messages", [])
-            st.rerun()
+    st.markdown("### Export Session")
+    
+    if len(st.session_state.messages) > 0:
+        session_md = "# Study Session Export\n\n"
+        for msg in st.session_state.messages:
+            role_title = "User" if msg["role"] == "user" else "Assistant"
+            session_md += f"### {role_title}\n\n{msg['content']}\n\n"
             
+        master_pdf_data = generate_pdf_bytes(session_md)
+        st.download_button("⬇️ Download Full Chat as PDF", data=master_pdf_data, file_name=f"Full_Session_Export.pdf", mime="application/pdf", use_container_width=True)
+    else:
+        st.markdown("<small style='color:#a1a1aa;'>Start chatting to generate an export.</small>", unsafe_allow_html=True)
+        
     st.markdown("---")
     st.markdown("### Quick Actions")
     st.button("📁 Upload Context", use_container_width=True)
@@ -234,6 +203,7 @@ with st.sidebar:
 # Main Screen Router
 if len(st.session_state.messages) == 0:
     # --- EMPTY STATE DASHBOARD ---
+    import datetime
     current_hour = datetime.datetime.now().hour
     if current_hour < 12:
         greeting = "Good Morning"
@@ -364,20 +334,6 @@ if len(st.session_state.messages) == 0:
 else:
     import re
     # --- CHAT UI ---
-    def generate_pdf_bytes(md_content):
-        from fpdf import FPDF
-        import markdown
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Helvetica", size=11)
-        # Strip simple non-latin chars and emojis for basic FPDF 
-        clean_md = md_content.encode('latin-1', 'ignore').decode('latin-1')
-        html = markdown.markdown(clean_md)
-        try:
-            pdf.write_html(html)
-        except Exception as e:
-            pdf.multi_cell(0, 8, text=f"-- PDF Html Warning --\n\n{clean_md}")
-        return bytes(pdf.output())
 
     for i, msg in enumerate(st.session_state.messages):
         with st.chat_message(msg["role"]):
