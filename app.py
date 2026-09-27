@@ -176,10 +176,16 @@ with st.sidebar:
     st.markdown("### Export Session")
     
     if len(st.session_state.messages) > 0:
+        import re
         session_md = "# Study Session Export\n\n"
         for msg in st.session_state.messages:
             role_title = "User" if msg["role"] == "user" else "Assistant"
-            session_md += f"### {role_title}\n\n{msg['content']}\n\n"
+            
+            clean_msg = re.sub(r'\[MODE:.*?\]\s*', '', msg["content"])
+            if "Context Provided:\n" in clean_msg:
+                clean_msg = "Context Provided:\n" + clean_msg.split("Context Provided:\n")[1]
+                
+            session_md += f"### {role_title}\n\n{clean_msg.strip()}\n\n"
             
         master_pdf_data = generate_pdf_bytes(session_md)
         st.download_button("⬇️ Download Full Chat as PDF", data=master_pdf_data, file_name=f"Full_Session_Export.pdf", mime="application/pdf", use_container_width=True)
