@@ -15,28 +15,35 @@ st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layou
 # Custom CSS for a beautiful, highly animated Dark UI
 st.markdown("""
     <style>
-    /* 1. Subtle Animated Grain/Glow on Dark Background */
+    /* 1. Deep Slate Navy Background (NO Black) */
     [data-testid="stAppViewContainer"] {
-        background: radial-gradient(circle at top, #1e1e2f 0%, #09090b 40%);
+        background: linear-gradient(-45deg, #0b1120, #0f172a, #1e293b, #0f172a);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
-    /* 2. Slide-up Fade Entry Animation (Fixed cutoff issue) */
+    /* 2. Slide-up Fade Entry Animation */
     [data-testid="stMainBlockContainer"] {
         animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         opacity: 0;
         transform: translateY(30px);
-        padding-top: 4rem !important; /* Forces header far down enough to never be hidden */
+        padding-top: 4rem !important; 
     }
     @keyframes slideUpFade {
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 3. Gorgeous Neon Gradient Header with Shimmer */
+    /* 3. Gorgeous Emerald/Ocean Header */
     .main-header {
         font-size: 3.8rem;
         font-weight: 900;
         margin-bottom: 0px;
-        background: linear-gradient(90deg, #00f2fe, #4facfe, #00f2fe);
+        background: linear-gradient(90deg, #10b981, #0ea5e9, #10b981);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -50,45 +57,45 @@ st.markdown("""
     /* 4. Sleek Sub Header */
     .sub-header {
         font-size: 1.2rem;
-        color: #a1a1aa;
+        color: #94a3b8;
         margin-bottom: 30px;
         font-weight: 400;
     }
 
-    /* 5. Premium Glowing Cyber-Button */
+    /* 5. Premium Glowing Emerald Button */
     .stButton>button {
-        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-        color: #09090b !important;
+        background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
+        color: #ffffff !important;
         font-size: 18px;
-        font-weight: 900;
-        border-radius: 12px;
+        font-weight: bold;
+        border-radius: 10px;
         padding: 15px 30px;
         border: none;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         position: relative;
     }
     .stButton>button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
     }
     .stButton>button:active {
         transform: translateY(1px);
     }
 
-    /* 6. Dark Frosted Glass Input Container */
+    /* 6. Slate Frosted Glass Input Container */
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
-        background: rgba(30, 30, 46, 0.5) !important;
+        background: rgba(30, 41, 59, 0.6) !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 16px !important;
+        border-radius: 12px !important;
         transition: all 0.3s ease;
     }
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border: 1px solid rgba(0, 242, 254, 0.4) !important;
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.1) !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1) !important;
     }
     </style>
 """, unsafe_allow_html=True)
