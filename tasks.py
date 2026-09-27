@@ -15,8 +15,17 @@ def create_study_tasks(topic_or_content: str, mode="default"):
     if mode == "flashcards":
         return [
             Task(
-                description=f"Analyze the following material: '{topic_or_content}'. {image_instruction}\nExtract exactly the key terms and concepts and format them strictly as a Markdown structured list of Flashcards (Term: Definition). Do not add any conversational padding.",
-                expected_output="A Markdown list of study flashcards.",
+                description=f"Analyze the following material: '{topic_or_content}'. {image_instruction}\n"
+                            "Extract exactly the key terms and concepts. You MUST format the output as RAW HTML interactive flashcards using this exact structure:\n"
+                            "<div class='flashcard-wrapper'>\n"
+                            "  <div class='flip-card'><div class='flip-card-inner'>\n"
+                            "    <div class='flip-card-front'><h3>TERM GOES HERE</h3></div>\n"
+                            "    <div class='flip-card-back'><p>DEFINITION GOES HERE</p></div>\n"
+                            "  </div></div>\n"
+                            "  <!-- repeat for all terms -->\n"
+                            "</div>\n"
+                            "CRITICAL: Do NOT wrap the HTML in ```html blocks. Output the raw HTML code directly so Streamlit can render it natively. Do not add markdown bullet points. Do not say 'Here are the flashcards'. Just output the HTML.",
+                expected_output="Pure HTML code containing the interactive flashcards.",
                 agent=professor
             )
         ]

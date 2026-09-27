@@ -70,6 +70,64 @@ st.markdown("""
     hr {
         border-color: rgba(255,255,255,0.1) !important;
     }
+    
+    /* 6. Interactive Flashcards */
+    .flashcard-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .flip-card {
+        background-color: transparent;
+        width: 300px;
+        height: 200px;
+        perspective: 1000px;
+    }
+    .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+        cursor: pointer;
+    }
+    .flip-card:hover .flip-card-inner {
+        transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .flip-card-front {
+        background: rgba(30, 26, 59, 0.8);
+        backdrop-filter: blur(12px);
+    }
+    .flip-card-back {
+        background: linear-gradient(135deg, #7B2CBF, #FF007A);
+        transform: rotateY(180deg);
+    }
+    .flip-card h3 {
+        color: #00C6FF !important;
+        margin: 0;
+    }
+    .flip-card-back p {
+        color: white !important;
+        font-size: 0.95rem;
+        margin: 0;
+    }
     </style>
 """, unsafe_allow_html=True)
 
