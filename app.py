@@ -12,66 +12,84 @@ load_dotenv(override=True)
 # --- UI CONFIGURATION ---
 st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layout="wide")
 
-# Custom CSS for a Clean, Minimalist Developer UI (GitHub/Linear style)
+# Custom CSS for "Nebula Glass" (Deep Indigo & Holographic Magenta)
 st.markdown("""
     <style>
-    /* Clean static dark background without animations */
+    /* 1. Deep Indigo with Holographic Ambient Glows */
     [data-testid="stAppViewContainer"] {
-        background-color: #0d1117;
+        background-color: #121026;
+        background-image: 
+            radial-gradient(circle at 15% 50%, rgba(255, 0, 122, 0.15), transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(0, 198, 255, 0.15), transparent 25%);
     }
 
-    /* Professional, crisp typography */
-    .main-header {
-        font-size: 3rem;
-        font-weight: 700;
-        color: #ffffff;
-        margin-bottom: 0px;
-        letter-spacing: -0.5px;
+    /* 2. Slide-up Entry Animation */
+    [data-testid="stMainBlockContainer"] {
+        animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(30px);
+        padding-top: 4rem !important; 
     }
-    
+    @keyframes slideUpFade {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3. Electric Blue to Hot Pink Gradient Header */
+    .main-header {
+        font-size: 3.8rem;
+        font-weight: 900;
+        margin-bottom: 0px;
+        background: linear-gradient(90deg, #00C6FF, #7B2CBF, #FF007A);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textShimmer 5s linear infinite;
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }
+    @keyframes textShimmer {
+        to { background-position: 200% center; }
+    }
+
+    /* 4. Soft Lilac Sub Header */
     .sub-header {
-        font-size: 1.1rem;
-        color: #8b949e;
+        font-size: 1.15rem;
+        color: #B1A9D4;
         margin-bottom: 30px;
         font-weight: 400;
     }
 
-    /* Minimalist Primary Action Button */
+    /* 5. Glowing Magenta-Purple Button */
     .stButton>button {
-        background-color: #238636;
+        background: linear-gradient(135deg, #7B2CBF 0%, #FF007A 100%);
         color: #ffffff !important;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 6px;
-        padding: 10px 20px;
-        border: 1px solid rgba(240, 246, 252, 0.1);
-        transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
-        box-shadow: none;
+        font-size: 17px;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: 12px 28px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(255, 0, 122, 0.3);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     .stButton>button:hover {
-        background-color: #2ea043;
-        border-color: rgba(240, 246, 252, 0.1);
-        transform: none;
-        box-shadow: none;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 0, 122, 0.5);
+        background: linear-gradient(135deg, #FF007A 0%, #7B2CBF 100%);
     }
 
-    /* Clean Input Container without distracting blurs or glows */
+    /* 6. Deep Violet Glassmorphism Input Container */
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #0d1117 !important;
-        border: 1px solid #30363d !important;
-        border-radius: 6px !important;
-        box-shadow: none !important;
-        transition: border-color 0.2s ease;
+        background: rgba(30, 26, 59, 0.7) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.3s ease;
     }
     [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border-color: #8b949e !important;
-        box-shadow: none !important;
-    }
-    
-    /* Remove heavy paddings */
-    .block-container {
-        padding-top: 3rem;
-        padding-bottom: 2rem;
+        border: 1px solid rgba(255, 0, 122, 0.3) !important;
+        box-shadow: 0 10px 40px rgba(255, 0, 122, 0.1) !important;
     }
     </style>
 """, unsafe_allow_html=True)
