@@ -12,76 +12,63 @@ load_dotenv(override=True)
 # --- UI CONFIGURATION ---
 st.set_page_config(page_title="Study Forge AI", page_icon="🎓", layout="wide")
 
-# Custom CSS for "Nebula Glass" (Deep Indigo & Holographic Magenta) + Chat Bubbles
+# Custom CSS for "Nebula Glass" Dashboard
 st.markdown("""
     <style>
-    /* 1. Deep Indigo with Holographic Ambient Glows */
+    /* 1. Global Background */
     [data-testid="stAppViewContainer"] {
-        background-color: #121026;
+        background-color: #0b0914;
         background-image: 
-            radial-gradient(circle at 15% 50%, rgba(255, 0, 122, 0.15), transparent 25%),
-            radial-gradient(circle at 85% 30%, rgba(0, 198, 255, 0.15), transparent 25%);
+            radial-gradient(circle at 10% 20%, rgba(123, 44, 191, 0.2), transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(0, 198, 255, 0.15), transparent 40%);
+        color: #ffffff;
     }
 
-    /* 2. Slide-up Entry Animation */
+    /* 2. Top Padding Fix */
     [data-testid="stMainBlockContainer"] {
-        animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        opacity: 0;
-        transform: translateY(30px);
-        padding-top: 4rem !important; 
-    }
-    @keyframes slideUpFade {
-        to { opacity: 1; transform: translateY(0); }
+        padding-top: 2rem !important;
+        padding-bottom: 5rem !important;
     }
 
-    /* 3. Electric Blue to Hot Pink Gradient Header */
-    .main-header {
-        font-size: 3.8rem;
-        font-weight: 900;
-        margin-bottom: 0px;
-        background: linear-gradient(90deg, #00C6FF, #7B2CBF, #FF007A);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: textShimmer 5s linear infinite;
-        letter-spacing: -1px;
-        line-height: 1.2;
+    /* 3. Glassmorphism Containers (applying to border=True containers) */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(22, 18, 43, 0.6) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        transition: transform 0.2s ease, border-color 0.2s ease;
     }
-    @keyframes textShimmer {
-        to { background-position: 200% center; }
+    
+    [data-testid="stVerticalBlockBorderWrapper"]:hover {
+        border-color: rgba(0, 198, 255, 0.3) !important;
+        transform: translateY(-2px);
     }
-
-    /* 4. Soft Lilac Sub Header */
-    .sub-header {
-        font-size: 1.15rem;
-        color: #B1A9D4;
-        margin-bottom: 30px;
-        font-weight: 400;
+    
+    /* Remove padding inside metric/action cards */
+    [data-testid="stVerticalBlockBorderWrapper"] > div {
+        padding: 0.5rem !important;
     }
 
-    /* 5. Glowing Chat Avatars & Bubbles */
+    /* 4. Chat Bubbles */
     [data-testid="stChatMessage"] {
         background: rgba(30, 26, 59, 0.5);
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 16px;
         padding: 10px 20px;
         margin-bottom: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    [data-testid="stChatMessage"] * {
-        color: #ffffff !important;
+
+    /* 5. Headings and Text */
+    h1, h2, h3, h4, p, span {
+        color: #e2def2 !important;
     }
     
-    /* 6. Expanders Styling (Attachments) */
-    [data-testid="stExpander"] {
-        background: rgba(30, 26, 59, 0.7) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 12px;
-    }
-    p {
-        color: #B1A9D4;
+    /* Fix hr */
+    hr {
+        border-color: rgba(255,255,255,0.1) !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -90,40 +77,120 @@ st.markdown("""
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# --- MAIN UI ---
-st.markdown('<p class="main-header">🎓 Study Forge Explorer</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Your intelligent multi-agent conversational researcher. Ask me anything.</p>', unsafe_allow_html=True)
+# --- APP LAYOUT ---
 
-# --- CHAT HISTORY RENDER LOOP ---
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"], unsafe_allow_html=True)
-
-st.write("") # Spacer
-
-# --- ATTACHMENT PIPELINE ---
-with st.expander("📎 Attach Context (PDF or Image) to your next message"):
-    uploaded_file = st.file_uploader("Upload material to give the Professor context", type=["pdf", "png", "jpg", "jpeg"], label_visibility="collapsed")
-
-# --- CONVERSATIONAL INPUT WAIT ---
-if prompt := st.chat_input("Ask a question, request a diagram, or provide instructions..."):
-    # 1. Store and display user prompt
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # 2. Extract Document/Context if attached
-    study_material = ""
+# Top Bar / Left Sidebar Area
+with st.sidebar:
+    st.markdown("""
+        <div style='text-align: center; margin-bottom: 2rem;'>
+            <h2 style='background: linear-gradient(90deg, #00C6FF, #FF007A); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>Nexus OS</h2>
+        </div>
+    """, unsafe_allow_html=True)
     
-    # Prepend History for Agent memory
+    if st.button("✨ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+        
+    st.markdown("---")
+    st.markdown("### Quick Actions")
+    st.button("📁 Upload Context", use_container_width=True)
+    st.button("⚙️ Settings", use_container_width=True)
+    
+    st.markdown("---")
+    st.markdown("### Active Agents")
+    st.markdown("🟢 **Professor** (Idle)")
+    st.markdown("🟢 **Visualizer** (Idle)")
+    st.markdown("🟢 **Quizmaster** (Idle)")
+    
+    st.markdown("---")
+    st.markdown("*(Powered by CrewAI & Gemini)*")
+
+# Main Screen Router
+if len(st.session_state.messages) == 0:
+    # --- EMPTY STATE DASHBOARD ---
+    st.markdown("""
+        <h1 style='font-size: 3.5rem; font-weight: 800; background: linear-gradient(90deg, #00C6FF, #7B2CBF, #FF007A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0px;'>
+            Good Evening, Explorer.
+        </h1>
+        <p style='font-size: 1.2rem; color: #B1A9D4; margin-bottom: 3rem;'>
+            Build, analyze, and automate learning with multi-agent AI.
+        </p>
+    """, unsafe_allow_html=True)
+    
+    # Grid of Suggested Actions
+    st.markdown("### Suggested Actions")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        with st.container(border=True):
+            st.markdown("🎓 **Blueprint a Syllabus**")
+            st.markdown("<small style='color:#a1a1aa;'>Generate a full learning plan.</small>", unsafe_allow_html=True)
+    with col2:
+        with st.container(border=True):
+            st.markdown("🖼️ **Analyze Diagram**")
+            st.markdown("<small style='color:#a1a1aa;'>Upload an image to break it down.</small>", unsafe_allow_html=True)
+    with col3:
+        with st.container(border=True):
+            st.markdown("📝 **Create Flashcards**")
+            st.markdown("<small style='color:#a1a1aa;'>Extract key terms for review.</small>", unsafe_allow_html=True)
+    with col4:
+        with st.container(border=True):
+            st.markdown("🧩 **Interactive Quiz**")
+            st.markdown("<small style='color:#a1a1aa;'>Test your knowledge on a topic.</small>", unsafe_allow_html=True)
+            
+    st.markdown("<br>", unsafe_allow_html=True)
+            
+    # Secondary Grid (Agent Status and Diagnostics)
+    eco1, eco2 = st.columns([2, 1])
+    
+    with eco1:
+        st.markdown("### System Diagnostics")
+        with st.container(border=True):
+            st.markdown("⚡ **Core Engine:** Gemini 1.5 Flash (Active)")
+            st.markdown("🧩 **Orchestrator:** CrewAI (Online)")
+            st.markdown("🌐 **Render Engine:** Graphviz DOT (Connected)")
+    
+    with eco2:
+        st.markdown("### API Health")
+        with st.container(border=True):
+            api_key = os.environ.get("GEMINI_API_KEY", "")
+            if api_key:
+                st.markdown("<h2 style='color: #10b981; margin:0;'>OK</h2>", unsafe_allow_html=True)
+                st.markdown("<small style='color:#a1a1aa;'>Secure Connection</small>", unsafe_allow_html=True)
+            else:
+                st.markdown("<h2 style='color: #ef4444; margin:0;'>FAIL</h2>", unsafe_allow_html=True)
+                st.markdown("<small style='color:#a1a1aa;'>API Key Missing</small>", unsafe_allow_html=True)
+                
+    st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+
+else:
+    # --- CHAT UI ---
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"], unsafe_allow_html=True)
+            
+    st.write("") # Spacer
+
+# --- FLOATING INPUT PIPELINE ---
+with st.expander("📎 Attach Context (PDF or Image) to your next message"):
+    uploaded_file = st.file_uploader("Upload material", type=["pdf", "png", "jpg", "jpeg"], label_visibility="collapsed")
+
+if prompt := st.chat_input("Ask a question to Nova (Your AI Assistant)..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.rerun() # Immediately rerun to show the empty state vanishing and the chat appending
+
+# Processing logic (Triggers after rerun clears the dashboard)
+if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
+    prompt = st.session_state.messages[-1]["content"]
+    
+    study_material = ""
     chat_history = ""
-    for m in st.session_state.messages[:-1]: # Don't include the immediate prompt we just added
+    for m in st.session_state.messages[:-1]:
         chat_history += f"{m['role'].capitalize()}: {m['content']}\n\n"
         
     if chat_history:
         study_material += f"--- PREVIOUS CONVERSATION HISTORY ---\n{chat_history}\n--- END HISTORY ---\n\n"
 
-    # Add File Data
     if uploaded_file:
         file_ext = uploaded_file.name.split('.')[-1].lower()
         if file_ext == "pdf":
@@ -136,22 +203,18 @@ if prompt := st.chat_input("Ask a question, request a diagram, or provide instru
                 
                 if len(extracted_text) > 15000:
                     extracted_text = extracted_text[:15000] + "\n...[Content Truncated]..."
-                
                 study_material += f"Attached Document Content:\n{extracted_text}\n\n"
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
-                
         elif file_ext in ["png", "jpg", "jpeg"]:
             temp_path = "temp_upload.png"
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.read())
             study_material += f"Image Reference: [IMAGE_PATH] {temp_path}\n\n"
 
-    # Add Latest Prompt
     study_material += f"Latest User Prompt:\n{prompt}\n\n"
     study_material = study_material.strip()
 
-    # 3. Execute Orchestrator
     with st.chat_message("assistant"):
         with st.status("🧠 Agents are thinking...", expanded=True) as status:
             try:
@@ -175,7 +238,6 @@ if prompt := st.chat_input("Ask a question, request a diagram, or provide instru
                             professor.llm = gemini_fallback_llm
                             visualizer.llm = gemini_fallback_llm
                             quizmaster.llm = gemini_fallback_llm
-                            
                             study_crew = Crew(agents=[professor, visualizer, quizmaster], tasks=tasks, verbose=False)
                         else:
                             raise e 
@@ -185,7 +247,6 @@ if prompt := st.chat_input("Ask a question, request a diagram, or provide instru
                 final_text = result.raw if hasattr(result, 'raw') else str(result)
                 st.markdown(final_text, unsafe_allow_html=True)
                 
-                # 4. Save to Memory
                 st.session_state.messages.append({"role": "assistant", "content": final_text})
                 
             except Exception as e:
