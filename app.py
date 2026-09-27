@@ -12,50 +12,95 @@ load_dotenv(override=True)
 # --- UI CONFIGURATION ---
 st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layout="wide")
 
-# Custom CSS for a polished look
+# Custom CSS for a beautiful, highly animated UI
 st.markdown("""
     <style>
-    /* Gradient Main Header */
+    /* 1. Moving Animated Gradient Background */
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #f5f7fa, #c2e9fb);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* 2. Slide-up Fade Entry Animation for Main App */
+    [data-testid="stMainBlockContainer"] {
+        animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    @keyframes slideUpFade {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3. Gorgeous Gradient Header with Shimmer */
     .main-header {
         font-size: 3.5rem;
         font-weight: 900;
         margin-bottom: 0px;
-        background: -webkit-linear-gradient(45deg, #00D2FF, #10B981);
+        background: linear-gradient(90deg, #6C5CE7, #00CEC9, #6C5CE7);
+        background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        animation: textShimmer 4s linear infinite;
         line-height: 1.2;
     }
-    /* Sleek Sub Header */
+    @keyframes textShimmer {
+        to { background-position: 200% center; }
+    }
+
+    /* 4. Sleek Sub Header */
     .sub-header {
         font-size: 1.2rem;
-        color: #94A3B8;
+        color: #636E72;
         margin-bottom: 30px;
-        font-weight: 300;
+        font-weight: 400;
     }
-    /* Premium Glassmorphic Button */
+
+    /* 5. Beautiful Animated Button */
     .stButton>button {
-        background: linear-gradient(135deg, #00D2FF 0%, #10B981 100%);
+        background: linear-gradient(135deg, #6C5CE7 0%, #00CEC9 100%);
         color: white;
         font-size: 18px;
         font-weight: bold;
-        border-radius: 12px;
-        padding: 15px 24px;
+        border-radius: 50px; /* Pillow-shaped friendly button */
+        padding: 15px 30px;
         border: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        overflow: hidden;
+        position: relative;
     }
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6);
     }
-    /* Hide some default Streamlit paddings slightly */
+    .stButton>button:active {
+        transform: translateY(1px);
+    }
+
+    /* 6. Frosted Glass Input Container */
+    [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1) !important;
+        transition: transform 0.3s ease;
+    }
+    [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
+        transform: translateY(-2px);
+    }
+
+    /* General Spacing */
     .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
-    }
-    /* Container styling for unified field */
-    [data-testid="stVerticalBlock"] {
-        border-radius: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
