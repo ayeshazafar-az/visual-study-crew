@@ -10,9 +10,9 @@ from tasks import create_study_tasks
 load_dotenv(override=True)
 
 # --- UI CONFIGURATION ---
-st.set_page_config(page_title="Multi-Agent Study Forge", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="Study Forge AI", page_icon="🎓", layout="wide")
 
-# Custom CSS for "Nebula Glass" (Deep Indigo & Holographic Magenta)
+# Custom CSS for "Nebula Glass" (Deep Indigo & Holographic Magenta) + Chat Bubbles
 st.markdown("""
     <style>
     /* 1. Deep Indigo with Holographic Ambient Glows */
@@ -59,78 +59,74 @@ st.markdown("""
         font-weight: 400;
     }
 
-    /* 5. Glowing Magenta-Purple Button */
-    .stButton>button {
-        background: linear-gradient(135deg, #7B2CBF 0%, #FF007A 100%);
+    /* 5. Glowing Chat Avatars & Bubbles */
+    [data-testid="stChatMessage"] {
+        background: rgba(30, 26, 59, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 10px 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    [data-testid="stChatMessage"] * {
         color: #ffffff !important;
-        font-size: 17px;
-        font-weight: 700;
-        border-radius: 14px;
-        padding: 12px 28px;
-        border: none;
-        box-shadow: 0 4px 20px rgba(255, 0, 122, 0.3);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 0, 122, 0.5);
-        background: linear-gradient(135deg, #FF007A 0%, #7B2CBF 100%);
-    }
-
-    /* 6. Deep Violet Glassmorphism Input Container */
-    [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"] {
+    
+    /* 6. Expanders Styling (Attachments) */
+    [data-testid="stExpander"] {
         background: rgba(30, 26, 59, 0.7) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
-        transition: all 0.3s ease;
+        border-radius: 12px;
     }
-    [data-testid="stVerticalBlock"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border: 1px solid rgba(255, 0, 122, 0.3) !important;
-        box-shadow: 0 10px 40px rgba(255, 0, 122, 0.1) !important;
+    p {
+        color: #B1A9D4;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
-with st.sidebar:
-    st.title("⚙️ System Status")
-    st.info("A multi-agent assembly line that transforms raw concepts and documents into beautifully illustrated study guides.")
-    st.markdown("---")
-    
-    # API Validation Indicator
-    api_key = os.environ.get("GEMINI_API_KEY", "").replace('"', '').replace("'", "").strip()
-    if api_key:
-        st.success("🟢 API Connected")
-    else:
-        st.error("🔴 API Key Missing")
-        
-    st.markdown("---")
-    st.markdown("**Active Agents:**")
-    st.markdown("👨‍🏫 **Professor:** Concept Analysis")
-    st.markdown("🎨 **Visualizer:** Mnemonic Design")
-    st.markdown("📝 **Quizmaster:** Assessment Compilation")
+# --- SESSION MEMORY ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 # --- MAIN UI ---
-st.markdown('<p class="main-header">🎓 Multi-Agent Study Forge</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Choose your input method below to generate a comprehensive study guide.</p>', unsafe_allow_html=True)
+st.markdown('<p class="main-header">🎓 Study Forge Explorer</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">Your intelligent multi-agent conversational researcher. Ask me anything.</p>', unsafe_allow_html=True)
 
-# Create unified input container
-study_material = ""
+# --- CHAT HISTORY RENDER LOOP ---
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"], unsafe_allow_html=True)
 
-st.markdown("### Prepare Your Study Material")
-with st.container(border=True):
-    topic_input = st.text_area("Context or Topic (Optional)", placeholder="e.g., Explain the Architecture of a CPU...", help="Describe the topic you want to learn, or provide context for your uploaded file.", label_visibility="collapsed")
+st.write("") # Spacer
+
+# --- ATTACHMENT PIPELINE ---
+with st.expander("📎 Attach Context (PDF or Image) to your next message"):
+    uploaded_file = st.file_uploader("Upload material to give the Professor context", type=["pdf", "png", "jpg", "jpeg"], label_visibility="collapsed")
+
+# --- CONVERSATIONAL INPUT WAIT ---
+if prompt := st.chat_input("Ask a question, request a diagram, or provide instructions..."):
+    # 1. Store and display user prompt
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # 2. Extract Document/Context if attached
+    study_material = ""
     
-    uploaded_file = st.file_uploader("Upload a PDF or Image (Optional)", type=["pdf", "png", "jpg", "jpeg"], label_visibility="collapsed")
+    # Prepend History for Agent memory
+    chat_history = ""
+    for m in st.session_state.messages[:-1]: # Don't include the immediate prompt we just added
+        chat_history += f"{m['role'].capitalize()}: {m['content']}\n\n"
+        
+    if chat_history:
+        study_material += f"--- PREVIOUS CONVERSATION HISTORY ---\n{chat_history}\n--- END HISTORY ---\n\n"
 
-if uploaded_file:
-    file_ext = uploaded_file.name.split('.')[-1].lower()
-    
-    if file_ext == "pdf":
-        with st.spinner("Extracting text from PDF..."):
+    # Add File Data
+    if uploaded_file:
+        file_ext = uploaded_file.name.split('.')[-1].lower()
+        if file_ext == "pdf":
             try:
                 pdf_reader = PyPDF2.PdfReader(uploaded_file)
                 extracted_text = ""
@@ -139,85 +135,61 @@ if uploaded_file:
                         extracted_text += page.extract_text() + "\n"
                 
                 if len(extracted_text) > 15000:
-                    extracted_text = extracted_text[:15000] + "\n...[Content Truncated for Processing]..."
-                    st.warning("⚠️ Document is very long. Analyzing the first ~15,000 characters.")
+                    extracted_text = extracted_text[:15000] + "\n...[Content Truncated]..."
                 
-                study_material += f"Document Content:\n{extracted_text}\n\n"
-                st.success(f"📄 PDF '{uploaded_file.name}' extracted successfully!")
+                study_material += f"Attached Document Content:\n{extracted_text}\n\n"
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
                 
-    elif file_ext in ["png", "jpg", "jpeg"]:
-        temp_path = "temp_upload.png"
-        with open(temp_path, "wb") as f:
-            f.write(uploaded_file.read())
-        
-        study_material += f"Image Reference: [IMAGE_PATH] {temp_path}\n\n"
-        st.success(f"🖼️ Image '{uploaded_file.name}' readied for the Professor!")
+        elif file_ext in ["png", "jpg", "jpeg"]:
+            temp_path = "temp_upload.png"
+            with open(temp_path, "wb") as f:
+                f.write(uploaded_file.read())
+            study_material += f"Image Reference: [IMAGE_PATH] {temp_path}\n\n"
 
-if topic_input:
-    study_material += f"User Instructions/Topic:\n{topic_input}\n\n"
+    # Add Latest Prompt
+    study_material += f"Latest User Prompt:\n{prompt}\n\n"
+    study_material = study_material.strip()
 
-study_material = study_material.strip()
-# If empty, study_material will equal an empty string. The "if not study_material" check handles this.
-
-st.markdown("---")
-
-# --- EXECUTION ORCHESTRATOR ---
-if st.button("🚀 Generate Visual Study Guide", use_container_width=True):
-    if not study_material:
-        st.error("⚠️ Please enter a topic or upload a document first.")
-    else:
-        # Dynamic UI status container
-        with st.status("🤖 Orchestrating the Crew...", expanded=True) as status:
+    # 3. Execute Orchestrator
+    with st.chat_message("assistant"):
+        with st.status("🧠 Agents are thinking...", expanded=True) as status:
             try:
-                st.write("👨‍🏫 Handing material to **The Professor** for analysis...")
+                st.write("👨‍🏫 Professor analyzing context & history...")
                 tasks = create_study_tasks(study_material)
                 
-                st.write("🎨 Instructing **The Visualizer** to design concept art...")
-                st.write("📝 **The Quizmaster** is standing by to compile the final markdown...")
-                
-                # Assemble the Crew (verbose=False keeps terminal clean)
                 study_crew = Crew(
                     agents=[professor, visualizer, quizmaster],
                     tasks=tasks,
                     verbose=False 
                 )
                 
-                # Execute Workflow with Fallback Logic for 503 errors
                 max_retries = 2
-                
                 for attempt in range(max_retries):
                     try:
                         result = study_crew.kickoff()
-                        break  # If successful, break out of the retry loop
+                        break 
                     except Exception as e:
                         if "503" in str(e) and attempt < max_retries - 1:
                             st.warning(f"⚠️ High API Demand (503). Switching to Fallback Pro Model...")
-                            # Swap out the models for all agents
                             professor.llm = gemini_fallback_llm
                             visualizer.llm = gemini_fallback_llm
                             quizmaster.llm = gemini_fallback_llm
                             
-                            # Reconstruct the crew
-                            study_crew = Crew(
-                                agents=[professor, visualizer, quizmaster],
-                                tasks=tasks,
-                                verbose=False 
-                            )
+                            study_crew = Crew(agents=[professor, visualizer, quizmaster], tasks=tasks, verbose=False)
                         else:
-                            raise e  # Propagate the error if retries are exhausted or it's a different error
+                            raise e 
                 
-                status.update(label="✅ Study Guide Complete!", state="complete", expanded=False)
+                status.update(label="✅ Response Generated", state="complete", expanded=False)
                 
-                # Render Final Output
-                st.markdown("---")
-                st.subheader("📖 Your Custom Study Guide")
-                if hasattr(result, 'raw'):
-                    st.markdown(result.raw)
-                else:
-                    st.markdown(result)
-                    
+                final_text = result.raw if hasattr(result, 'raw') else str(result)
+                st.markdown(final_text, unsafe_allow_html=True)
+                
+                # 4. Save to Memory
+                st.session_state.messages.append({"role": "assistant", "content": final_text})
+                
             except Exception as e:
                 status.update(label="❌ Generation Failed", state="error")
-                st.error(f"An error occurred: {str(e)}")
+                error_msg = f"An error occurred: {str(e)}"
+                st.error(error_msg)
+                st.session_state.messages.append({"role": "assistant", "content": f"⚠️ {error_msg}"})
