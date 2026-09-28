@@ -423,14 +423,16 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                     verbose=False 
                 )
                 
-                max_retries = 2
+                max_retries = 4
+                import time
                 for attempt in range(max_retries):
                     try:
                         result = study_crew.kickoff()
                         break 
                     except Exception as e:
                         if "503" in str(e) and attempt < max_retries - 1:
-                            st.warning(f"⚠️ High API Demand (503). Switching to Fallback Pro Model...")
+                            st.warning(f"⚠️ High API Demand (503). Retrying in {attempt*2 + 2}s (Attempt {attempt+2}/{max_retries})...")
+                            time.sleep(attempt * 2 + 2)
                             professor.llm = gemini_fallback_llm
                             visualizer.llm = gemini_fallback_llm
                             quizmaster.llm = gemini_fallback_llm
