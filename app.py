@@ -348,7 +348,7 @@ else:
             
             if msg["role"] == "assistant":
                 pdf_data = generate_pdf_bytes(clean_display)
-                st.download_button("⬇️ Download as PDF", data=pdf_data, file_name=f"StudyForge_Export.pdf", mime="application/pdf", key=f"dl_pdf_{i}")
+                st.download_button("⬇️ Download as PDF", data=pdf_data, file_name=f"StudyForge_Response_{i//2 + 1}.pdf", mime="application/pdf", key=f"dl_pdf_{i}")
             
     st.write("") # Spacer
 
