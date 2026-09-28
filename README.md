@@ -4,17 +4,16 @@
 
 Instead of relying on a single AI model to perform all tasks, the system utilizes a **CrewAI** orchestrator to delegate specific objectives to a team of specialized agents, ensuring higher quality reasoning, formatting, and multimodal outputs.
 
-## 🌟 Key Features
-- **Text Prompting**: Enter any subject (e.g., "The Architecture of a CPU") and let the agents break it down.
-- **Document Ingestion**: Upload a PDF document for the agents to analyze and summarize into a study guide.
-- **Multimodal Vision Integration**: Upload diagrams or visual notes (`png`, `jpg`); the agents use Gemini's deep vision capabilities to "read" the visual content and synthesize explanations.
-- **Automated Tool Calling**: Agents seamlessly use custom tools (such as Pollinations.ai for generating concept art and Gemini Vision for diagram analysis) autonomously.
+- **Conversational ChatGPT-Style Dashboard**: A persistent chat UI allowing you to ask follow-up questions and generate multiple study modules in a single session.
+- **Ephemeral Session Security**: Chat memory securely resides in the browser state and is strictly wiped on refresh—ensuring private, footprint-free usage.
+- **PDF Export Engines**: Export the entire holistic study session into a Master PDF, or download individual Quick Action responses as cleanly formatted, standalone PDF snapshots.
+- **Automated Tool Calling & Graphviz Layouts**: The multi-agent cluster automatically formats responses, analyzes attachments, and outputs structured, complex block-diagram architecture layouts using QuickChart Graphviz rendering.
 
 ## 🤖 The AI Crew
-The core logic relies on three distinct AI agents running sequentially:
-1. **👨‍🏫 The Professor (Senior Concept Analyst)**: Ingests raw text or images and breaks down complex subjects into highly digestible, beginner-friendly explanations using analogies.
-2. **🎨 The Visualizer (Educational Mnemonic Designer)**: Translates textbook concepts into abstract visualization prompts and interfaces with Pollinations API to generate a concrete visual aid.
-3. **📝 The Quizmaster (Assessment Editor & Compiler)**: Synthesizes the text and image, generates a practice multiple-choice quiz, and compiles the final polished Markdown document.
+The core logic relies on a Hierarchical Multi-Agent cluster, utilizing the Gemini 3.5 Flash and Gemini 3.1 Pro Preview models:
+1. **👨‍🏫 The Professor (Senior Concept Analyst)**: Ingests raw text, images, or PDFs to explain complex subjects in a beginner-friendly manner.
+2. **🎨 The Visualizer (Graphviz Architect)**: Translates textbook concepts into strict textual DOT architecture definitions for structural block diagram generation.
+3. **📝 The Quizmaster (Assessment Editor)**: Synthesizes content and generates multiple-choice quizzes or flashcards based on the user's specific context.
 
 ## 🛠️ Tech Stack
 - **Python 3**
