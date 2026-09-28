@@ -12,13 +12,13 @@ cleaned_key = raw_key.replace('"', '').replace("'", "").strip()
 
 # Initialize the LLM using the current active model
 gemini_llm = LLM(
-    model="gemini/gemini-3.5-flash-lite", 
+    model="gemini/gemini-3.1-flash-lite", 
     api_key=cleaned_key
 )
 
 # Fallback LLM to be dynamically swapped during high-demand 503 errors
 gemini_fallback_llm = LLM(
-    model="gemini/gemini-3.5-flash-lite",
+    model="gemini/gemini-3.1-flash-lite",
     api_key=cleaned_key
 )
 

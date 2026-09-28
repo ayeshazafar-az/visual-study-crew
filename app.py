@@ -423,28 +423,25 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                     verbose=False 
                 )
                 
-                max_retries = 4
-                import time
-                for attempt in range(max_retries):
-                    try:
+                # Fallback directly to 3.1-flash-lite on startup
+                try:
+                    result = study_crew.kickoff()
+                except Exception as e:
+                    if "503" in str(e):
+                        st.warning("⚠️ High API Demand (503). Retrying ONE time with legacy endpoint...")
+                        professor.llm = gemini_fallback_llm
+                        visualizer.llm = gemini_fallback_llm
+                        quizmaster.llm = gemini_fallback_llm
+                        study_crew = Crew(
+                            agents=[professor, visualizer, quizmaster], 
+                            tasks=tasks, 
+                            process=Process.hierarchical,
+                            manager_llm=gemini_fallback_llm,
+                            verbose=False
+                        )
                         result = study_crew.kickoff()
-                        break 
-                    except Exception as e:
-                        if ("503" in str(e) or "429" in str(e)) and attempt < max_retries - 1:
-                            st.warning(f"⚠️ API Demand/Quota ({('503' if '503' in str(e) else '429')}). Retrying in {attempt*2 + 2}s (Attempt {attempt+2}/{max_retries})...")
-                            time.sleep(attempt * 2 + 2)
-                            professor.llm = gemini_fallback_llm
-                            visualizer.llm = gemini_fallback_llm
-                            quizmaster.llm = gemini_fallback_llm
-                            study_crew = Crew(
-                                agents=[professor, visualizer, quizmaster], 
-                                tasks=tasks, 
-                                process=Process.hierarchical,
-                                manager_llm=gemini_fallback_llm,
-                                verbose=False
-                            )
-                        else:
-                            raise e 
+                    else:
+                        raise e 
                 
                 status.update(label="✅ Response Generated", state="complete", expanded=False)
                 
