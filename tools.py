@@ -50,7 +50,7 @@ def analyze_educational_image(image_path: str, context: str = "Explain the conce
         
         # Instantiate the model with vision capabilities
         llm = ChatGoogleGenerativeAI(
-            model="gemini-flash-latest",
+            model="gemini-3.7-flash",
             google_api_key=api_key,
             temperature=0.3
         )
