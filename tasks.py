@@ -67,6 +67,7 @@ def create_study_tasks(topic_or_content: str, mode="default"):
             "1. Write clean Graphviz DOT syntax representing a BLOCK DIAGRAM (rankdir=LR).\n"
             "   - CRITICAL: Node IDs MUST be strictly alphanumeric with NO spaces.\n"
             "   - CRITICAL: Text labels must be in double-quotes.\n"
+            "   - CRITICAL: You MUST wrap your output strictly in a `digraph G { ... }` block.\n"
             "2. Pass this DOT code to the 'Generate Concept Image' tool.\n"
             "3. Return the exact Markdown image link outputted by the tool."
         ),

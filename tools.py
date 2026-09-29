@@ -22,6 +22,10 @@ def generate_concept_image(prompt: str) -> str:
         
     graphviz_code = graphviz_code.strip()
     
+    # Auto-wrap in digraph if the agent forgot
+    if not graphviz_code.startswith("digraph") and not graphviz_code.startswith("graph"):
+        graphviz_code = f"digraph G {{\nrankdir=LR;\n{graphviz_code}\n}}"
+        
     import urllib.parse
     encoded_chart = urllib.parse.quote(graphviz_code)
     image_url = f"https://quickchart.io/graphviz?graph={encoded_chart}"
