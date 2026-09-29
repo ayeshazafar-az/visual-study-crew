@@ -148,29 +148,17 @@ def generate_pdf_bytes(md_content):
     return bytes(pdf.output())
 
 # --- SESSION MEMORY ---
-import json
 import uuid
 import time
 
-SESSION_DIR = "sessions"
-if not os.path.exists(SESSION_DIR):
-    os.makedirs(SESSION_DIR)
+if "all_sessions" not in st.session_state:
+    st.session_state.all_sessions = {}
+
+if "current_session_id" not in st.session_state:
+    st.session_state.current_session_id = str(uuid.uuid4())
 
 def get_all_sessions():
-    sessions = []
-    for f in os.listdir(SESSION_DIR):
-        if f.endswith('.json'):
-            try:
-                with open(os.path.join(SESSION_DIR, f), 'r', encoding='utf-8') as file:
-                    data = json.load(file)
-                    sessions.append({
-                        "id": f.replace('.json', ''),
-                        "title": data.get("title", "New Chat"),
-                        "updated_at": data.get("updated_at", 0)
-                    })
-            except:
-                pass
-    return sorted(sessions, key=lambda x: x["updated_at"], reverse=True)
+    return sorted(list(st.session_state.all_sessions.values()), key=lambda x: x["updated_at"], reverse=True)
 
 def save_history(messages):
     title = "New Chat"
@@ -182,15 +170,12 @@ def save_history(messages):
                 title = clean[:30] + "..." if len(clean) > 30 else clean
                 break
     
-    with open(os.path.join(SESSION_DIR, f"{st.session_state.current_session_id}.json"), "w", encoding='utf-8') as f:
-        json.dump({
-            "title": title,
-            "updated_at": time.time(),
-            "messages": messages
-        }, f)
-
-if "current_session_id" not in st.session_state:
-    st.session_state.current_session_id = str(uuid.uuid4())
+    st.session_state.all_sessions[st.session_state.current_session_id] = {
+        "id": st.session_state.current_session_id,
+        "title": title,
+        "updated_at": time.time(),
+        "messages": messages
+    }
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -228,12 +213,7 @@ with st.sidebar:
                 
             if st.button(btn_label, key=f"session_{s['id']}", use_container_width=True):
                 st.session_state.current_session_id = s['id']
-                try:
-                    with open(os.path.join(SESSION_DIR, f"{s['id']}.json"), 'r', encoding='utf-8') as file:
-                        data = json.load(file)
-                        st.session_state.messages = data.get("messages", [])
-                except:
-                    st.session_state.messages = []
+                st.session_state.messages = s.get("messages", [])
                 st.session_state.selected_action = None
                 st.rerun()
 
