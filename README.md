@@ -1,26 +1,29 @@
-# Multi-Agent Study Forge 🎓
+# Multi-Agent Study Forge 🎓✨
 
-**Multi-Agent Study Forge** is an AI-powered educational application that transforms raw topics, text, or documents into comprehensively structured, visually illustrated study guides. 
+**Multi-Agent Study Forge** is an AI-powered educational dashboard that transforms raw topics, textbook snippets, and uploaded images into comprehensively structured, visually illustrated study guides. 
 
-Instead of relying on a single AI model to perform all tasks, the system utilizes a **CrewAI** orchestrator to delegate specific objectives to a team of specialized agents, ensuring higher quality reasoning, formatting, and multimodal outputs.
+By bypassing traditional single-model constraints, this application deploys a **CrewAI Hierarchical Orchestrator** to delegate objectives across a team of specialized agents, guaranteeing superior logical reasoning, strictly formatted layouts, and multimodal precision.
 
-- **Conversational ChatGPT-Style Dashboard**: A persistent chat UI allowing you to ask follow-up questions and generate multiple study modules in a single session.
-- **Ephemeral Session Security**: Chat memory securely resides in the browser state and is strictly wiped on refresh—ensuring private, footprint-free usage.
-- **PDF Export Engines**: Export the entire holistic study session into a Master PDF, or download individual Quick Action responses as cleanly formatted, standalone PDF snapshots.
-- **Automated Tool Calling & Graphviz Layouts**: The multi-agent cluster automatically formats responses, analyzes attachments, and outputs structured, complex block-diagram architecture layouts using QuickChart Graphviz rendering.
+## 🌟 Core Features
+
+- **Multi-Session Conversational Dashboard**: A persistent, ChatGPT-style chat interface featuring a dynamic sidebar that automatically localizes and tracks your parallel chat sessions *without* needing cloud accounts or database logins.
+- **Ephemeral Session Security**: History is securely tethered to your browser's active `st.session_state`. When you terminate the browser tab, the memory is strictly wiped—guaranteeing 100% private, serverless operation.
+- **Full-Spread PDF Exporting**: Instantly download the entire conversational study session into a cleanly formatted Master PDF, or snapshot individual Quick Action responses.
+- **Automated Graphviz DOT Layouts**: The multi-agent cluster autonomously designs complex structural architectures and formats them into strict block diagrams, auto-wrapped and rendered natively inside your chat.
+- **High-Availability Engine Core**: Hardened against free-tier API congestion limits by strictly mapping the orchestration agents to the reliable legacy `gemini-3.1-flash-lite` cluster.
 
 ## 🤖 The AI Crew
-The core logic relies on a Hierarchical Multi-Agent cluster, utilizing the Gemini 3.5 Flash and Gemini 3.1 Pro Preview models:
-1. **👨‍🏫 The Professor (Senior Concept Analyst)**: Ingests raw text, images, or PDFs to explain complex subjects in a beginner-friendly manner.
-2. **🎨 The Visualizer (Graphviz Architect)**: Translates textbook concepts into strict textual DOT architecture definitions for structural block diagram generation.
-3. **📝 The Quizmaster (Assessment Editor)**: Synthesizes content and generates multiple-choice quizzes or flashcards based on the user's specific context.
 
-## 🛠️ Tech Stack
+1. **👨‍🏫 The Professor (Senior Concept Analyst)**: Ingests raw text, images, or PDFs to explain complex subjects in a structured, accessible manner.
+2. **🎨 The Visualizer (Graphviz Architect)**: Translates textbook concepts into strict textual DOT architectures for block diagram generation.
+3. **📝 The Quizmaster (Assessment Editor)**: Synthesizes material to generate challenging multiple-choice quizzes and interactive flashcards.
+
+## 🛠️ Technology Stack
 - **Python 3**
-- **Streamlit** (UI Framework)
+- **Streamlit** (Conversational UI & Serverless State Management)
 - **CrewAI** (Agent Orchestrator)
-- **Google Gemini API** (LLM & Vision Models via Langchain SDK)
-- **PyPDF2** (Document Parsing)
+- **Google Gemini API** (LLM & Vision Multimodal Models)
+- **PyPDF2 & QuickChart API** (Parsing and Rendering)
 
 ## 🚀 Installation & Setup
 
@@ -31,7 +34,7 @@ The core logic relies on a Hierarchical Multi-Agent cluster, utilizing the Gemin
    ```
 
 2. **Install dependencies:**
-   Make sure you have python installed. It is recommended to use a virtual environment.
+   Make sure you have Python installed. It is strongly recommended to use a virtual environment (`venv`).
    ```bash
    pip install -r requirements.txt
    ```
