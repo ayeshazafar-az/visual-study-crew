@@ -455,6 +455,13 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
     study_material = study_material.strip()
 
     with st.chat_message("assistant"):
+        # Explicit Key Guard Sequence
+        api_key_check = os.environ.get("GEMINI_API_KEY", "").strip()
+        if not api_key_check:
+            st.error("⚠️ System Aborted: GEMINI_API_KEY is missing! Please configure it in your environment variables.")
+            st.session_state.messages.append({"role": "assistant", "content": "⚠️ Generation aborted. The GEMINI_API_KEY is missing."})
+            st.stop()
+            
         with st.status("🧠 Agents are thinking...", expanded=True) as status:
             try:
                 st.write(f"👨‍🏫 Orchestrating learning tasks (Mode: {mode.upper()})...")
