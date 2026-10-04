@@ -82,7 +82,7 @@ def create_study_tasks(topic_or_content: str, mode="default"):
             "3. Combine the Professor's Concept Breakdown, the Visualizer's Image Link, and your Practice Quiz into a single, beautifully structured Markdown Study Guide."
         ),
         expected_output="A final, masterfully compiled Markdown study guide.",
-        agent=None # The Manager decides who compiles, or the agent can take it
+        agent=quizmaster
     )
 
     return [explain_task, visualize_task, compile_task]

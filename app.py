@@ -1,5 +1,9 @@
 import streamlit as st
 import os
+import re
+import uuid
+import time
+import datetime
 import PyPDF2
 from dotenv import load_dotenv
 from crewai import Crew, Process
@@ -148,8 +152,6 @@ def generate_pdf_bytes(md_content):
     return bytes(pdf.output())
 
 # --- SESSION MEMORY ---
-import uuid
-import time
 
 if "all_sessions" not in st.session_state:
     st.session_state.all_sessions = {}
@@ -221,7 +223,6 @@ with st.sidebar:
     st.markdown("### Export Session")
     
     if len(st.session_state.messages) > 0:
-        import re
         session_md = "# Study Session Export\n\n"
         for msg in st.session_state.messages:
             role_title = "User" if msg["role"] == "user" else "Assistant"
@@ -254,7 +255,6 @@ with st.sidebar:
 # Main Screen Router
 if len(st.session_state.messages) == 0:
     # --- EMPTY STATE DASHBOARD ---
-    import datetime
     current_hour = datetime.datetime.now().hour
     if current_hour < 12:
         greeting = "Good Morning"
@@ -339,7 +339,6 @@ if len(st.session_state.messages) == 0:
                     if qa_upload:
                         ext = qa_upload.name.split('.')[-1].lower()
                         if ext == "pdf":
-                            import PyPDF2
                             try:
                                 pdf_reader = PyPDF2.PdfReader(qa_upload)
                                 extracted = "\n".join([page.extract_text() for page in pdf_reader.pages if page.extract_text()])
@@ -365,7 +364,7 @@ if len(st.session_state.messages) == 0:
     with eco1:
         st.markdown("### System Diagnostics")
         with st.container(border=True):
-            st.markdown("⚡ **Core Engine:** Gemini 1.5 Flash (Active)")
+            st.markdown("⚡ **Core Engine:** Gemini 1.5 Flash — Primary Model (Active)")
             st.markdown("🧩 **Orchestrator:** CrewAI (Online)")
             st.markdown("🌐 **Render Engine:** Graphviz DOT (Connected)")
     
@@ -383,7 +382,6 @@ if len(st.session_state.messages) == 0:
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
 else:
-    import re
     # --- CHAT UI ---
 
     for i, msg in enumerate(st.session_state.messages):
@@ -410,7 +408,6 @@ if prompt := st.chat_input("Ask a question to Nova (Your AI Assistant)..."):
 if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
     raw_prompt = st.session_state.messages[-1]["content"]
     
-    import re
     mode = "default"
     mode_match = re.search(r"\[MODE:(.*?)\]\s*", raw_prompt)
     if mode_match:
