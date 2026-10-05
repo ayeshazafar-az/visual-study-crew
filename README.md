@@ -1,5 +1,7 @@
 # Multi-Agent Study Forge 🎓✨
 
+**🌐 Live Demo:** [https://visual-study-crew.streamlit.app/](https://visual-study-crew.streamlit.app/)
+
 **Multi-Agent Study Forge** is an AI-powered educational dashboard that transforms raw topics, textbook snippets, and uploaded images into comprehensively structured, visually illustrated study guides. 
 
 By bypassing traditional single-model constraints, this application deploys a **CrewAI Hierarchical Orchestrator** to delegate objectives across a team of specialized agents, guaranteeing superior logical reasoning, strictly formatted layouts, and multimodal precision.
